@@ -104,8 +104,21 @@ function App(){
 
 - **state 변경함수 특징**
 1) **기존 state == 신규 state** 가 **true**라면 동작하지 않음
-2) JavaScript는 **call by sharing** 특징을 가지고 있으므로, 원시타입인 경우 새로운 저장소에 값이 복사되고 객체타입(array, object, function)의 경우 새로운 저장소에 주소값이 복사됨
-3) 때문에, **let copiedObj = [...originObj]** 와 같이 전개(...)연산자(speard operation)를 사용하여 elelment를 풀어서 원시타입으로 저장해야 state변경함수에서 값이 변경된 것을 인지하고 HTML 재렌더링 가능 
+2) JavaScript는 **call by sharing** 특징을 가지고 있으므로, 원시타입은 새로운 저장소에 값이 복사되고 객체타입(array, object, function)은 새로운 저장소에 주소값이 복사됨
+3) 때문에, **let copiedObj = [...originObj]** 와 같이 전개(...)연산자(speard operation)를 사용하여 []를 풀어서 원시타입으로 저장해야 state변경함수에서 값이 변경된 것을 인지하고 HTML 재렌더링 가능 
+
+> [!NOTE]
+> <details>
+> <summary>...연산자 (speard operation)</summary>
+>
+> 괄호를 벗겨서 객체타입을 원시타입으로 바꾸기 위한 연산자
+> ```JavaScript
+> let data1 = [1, 2, 3];
+> let data2 = ...data1;
+> 
+> console.log(data2)     // 결과값: 1, 2, 3
+> ```
+> </details>
 
 > [!NOTE]
 > <details>
@@ -147,6 +160,9 @@ function App(){
 > // 3) JSON 객체의 메소드 이용 JSON.stringfy, JSON.parse
 > ```
 > </details>
+
+# Component
+a
 
 # Getting Started with Create React App
 
