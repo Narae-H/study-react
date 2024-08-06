@@ -166,7 +166,7 @@ function App(){
 많은 HTML tag들을 한 단어로 줄이고 싶을 때 사용 => 즉, **반복적인 html 축약/큰 페이지 저장/내용이 매우 자주 변경되는 HTML 사용**하면 됨
 
 ### 문법
-Step 1) function 만듬 (function 이름은 첫글자 대문자로)    
+Step 1) function 만듬 (function 이름은 첫글자는 대문자로)    
 Step 2) 그 함수의 return 안에 축약하고 싶은 html 담기    
 Step 3) 원하는 곳에 <함수명/> 사용하면 축약한 html 나옴    
 ```JavaScript
@@ -174,7 +174,7 @@ function App (){
   return (
     <div>
       (생략)
-      <Modal></Modal>
+      <Modal/>
     </div>
   )
 }
@@ -205,7 +205,6 @@ function App (){
       {
         modalState? <Modal/> : null
       }
-      <Modal></Modal>
     </div>
   )
 }
