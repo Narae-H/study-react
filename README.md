@@ -39,7 +39,7 @@ npx create-react-app [프로젝트명]
 
 # state
 ### state란?
-자료를 잠깐 보관하는 곳. state는 변동 사항이 생기면 자동으로 html을 재랜더링 해줌 => 즉, 자주 값이 자주 바뀌어서 재랜더링이 필요한 곳에 쓰면 됨.
+자료를 잠깐 보관하는 곳. state는 변동 사항이 생기면 자동으로 html을 재랜더링 해줌 => 즉, **자주 값이 자주 바뀌어서 재랜더링이 필요한 곳**에 쓰면 됨.
 |      특징      |   state                              |  변수                                                |
 |----------------|--------------------------------------|-----------------------------------------------------|
 |     공통점     | 변수를 보관                            | 변수를 보관                                          |
@@ -162,7 +162,88 @@ function App(){
 > </details>
 
 # Component
-a
+### Component란?
+많은 HTML tag들을 한 단어로 줄이고 싶을 때 사용 => 즉, **반복적인 html 축약/큰 페이지 저장/내용이 매우 자주 변경되는 HTML 사용**하면 됨
+
+### 문법
+Step 1) function 만듬 (function 이름은 첫글자 대문자로)
+Step 2) 그 함수의 return 안에 축약하고 싶은 html 담기
+Step 3) 원하는 곳에 <함수명/> 사용하면 축약한 html 나옴
+```JavaScript
+function App (){
+  return (
+    <div>
+      (생략)
+      <Modal></Modal>
+    </div>
+  )
+}
+
+function Modal () {
+  return (
+    <div className="modal">
+      <h4>제목</h4>
+      <p>날짜</p>
+      <p>상세내용</p>
+    </div>
+  )
+}
+```
+
+### 동적인 UI로 활용
+Step 1) html css로 미리 UI 디자인
+Step 2) UI의 현재 상태를 state로 저장
+Step 3) state에 따라서 UI가 어떻게 보일지 조건문 등으로 작성
+```JavaScript
+function App (){
+  let [modalState, setModalState] = useState(0);
+
+  return (
+    <div>
+      (생략)
+      <button onClick={ () => { setModalState(1) }}>모달 보여줘</button>
+      {
+        modalState? <Modal/> : null
+      }
+      <Modal></Modal>
+    </div>
+  )
+}
+
+function Modal () {
+  return (
+    <div className="modal">
+      <h4>제목</h4>
+      <p>날짜</p>
+      <p>상세내용</p>
+    </div>
+  )
+}
+```
+> [!NOTE]
+> <details>
+> <summary>JSX의 조건문</summary>
+>
+> JSX 안에서는 if/else 문법을 바로 사용할 수 없음. 대신에 삼항연산자를 { }에서 사용가능
+> ```JavaScript
+> { 2 > 1 ? console.log('맞음): console.log('틀림') }
+> ```
+> </details>
+
+
+# Props
+
+# Route
+
+# UseNavigate
+
+
+
+
+# JavaScript참고 문법
+1. map()
+2. sort()
+3. find()
 
 # Getting Started with Create React App
 
