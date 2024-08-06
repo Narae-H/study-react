@@ -82,8 +82,71 @@ function App() {
 > </details>
 
 - **state 변경하는 법**    
-**let[**_state이름, state변경함수 이름_**]** = **useState(**_state에 저장할 값_**)**
+state만 변경했다고 해서 값이 바로 변경되는 것이 아니라, state변경 함수를 이용하여 state값을 저장해야 HTML 재렌더링이루어짐.
+```
+// 👍 눌렀을 때, likes가 1씩 증가하는 함수
+function App(){
+  let [likes, setLikes] = useState(0);
+  
+  return (
+     <h4> 글 제목 <span onClick={ () => { setLikes(likes++) }} >👍</span> { likes }</h4>
+  )
+}
+```
+> [!NOTE]
+> <details>
+> <summary> JSX에서 onClick 함수 사용</summary>
+>
+> 1) onClick에서 'C'는 대문자로
+> 2) onClick 다음에는 {} 중괄호 사용
+> 3) {} 안에는 함수를 넣어야 함
+> </details>
 
+- **state 변경함수 특징**
+1) 기존 state == 신규 state 가 true라면 동작하지 않음
+2) JavaScript는 call by sharing 특징을 가지고 있으므로, 원시타입인 경우 새로운 저장소에 값이 복사되고 객체타입(array, object, function)의 경우 새로운 저장소에 주소값이 복사됨
+3) 때문에, ***let copiedObj = [...originObj]*** 와 같이 전개(...)연산자(speard operation) 을 사용하여 elelment를 순차적으로 풀어서 저장해야 함. 
+
+> [!NOTE]
+> <details>
+> <summary> JavaScript의 call by sharing</summary>
+>
+> 객체타입은 새로운 저장소에 값이 복사되는게 아니라 주소값이 복사됨.
+> ```JavaScript
+> // 1. 얕은 복사 (shallow copy)
+> let originObj  = [1, 2, 3];
+> let sCopiedObj = originObj;
+> console.log( originObj );                 // 결과값: [1, 2, 3]
+> console.log( sCopiedObj );                // 결과값: [1, 2, 3]
+> console.log( originObj == sCopiedObj );   // 결과값: true (originObj이 저장하고 있는 주소값과 sCopiedObj가 저장하고 있는 주소값이 동일)
+> 
+> // 2. 다른 객체에 같은 값 대입 
+> let originObj2  = [1, 2, 3];
+> let sCopiedObj2 = [1, 2, 3];
+> console.log( originObj2 );                // 결과값: [1, 2, 3]
+> console.log( sCopiedObj2 );               // 결과값: [1, 2, 3]
+> console.log( originObj2 == sCopiedObj2 ); // 결과값: false (originObj이 저장하고 있는 주소값과 sCopiedObj가 저장하고 있는 주소값이 다름)
+> 
+> // 3. 복사된 객체에 새로운 값 추가
+> sCopiedObj.push(4);                       // sCopiedObj에만 값을 추가. 정확히는 sCopiedObj가 저장하고 있는 주소값에 가서 객체 변경 
+> console.log( originObj );                 // 결과값: [1, 2, 3, 4]
+> console.log( sCopiedObj );                // 결과값: [1, 2, 3, 4]
+> console.log( originObj == sCopiedObj );   // 결과값: true (originObj이 저장하고 있는 주소값과 sCopiedObj가 저장하고 있는 주소값이 동일) 
+> 
+> // 4. 깊은 복사 (deep copy)
+> let dCopiedObj = [...originObj];          // 전개(...) 연산자를 값을 복사하여 새로운 주소에 저장. 하지만 전개 연산자도 depth-level1까지만 복사 가능
+>                                           // depth-level2에 또 다시 객체가 나온다면 다시 주소 값을 복사하여 저장하게 됨 
+> dCopiedObj.push(5);
+> console.log( originObj );                 // 결과값: [1, 2, 3, 4]
+> console.log( dCopiedObj );                // 결과값: [1, 2, 3, 4, 5]
+> console.log( originObj == dCopiedObj );   // 결과값: false (originObj이 저장하고 있는 주소값과 sCopiedObj가 저장하고 있는 주소값이 다름) 
+> 
+> // 5. 완전 깊은 복사
+> // 1) 모든 깊이의 객체까지 복사하는, 커스텀 재귀 함수 사용
+> // 2) Lodash의 cloneDeep() 사용 (별도 패키지 설치)
+> // 3) JSON 객체의 메소드 이용 JSON.stringfy, JSON.parse
+> ```
+> </details>
 
 # Getting Started with Create React App
 
