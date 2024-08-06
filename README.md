@@ -83,7 +83,7 @@ function App() {
 
 - **state 변경하는 법**    
 state만 변경했다고 해서 값이 바로 변경되는 것이 아니라, state변경 함수를 이용하여 state값을 저장해야 HTML 재렌더링이루어짐.
-```
+```JavaScript
 // 👍 눌렀을 때, likes가 1씩 증가하는 함수
 function App(){
   let [likes, setLikes] = useState(0);
@@ -98,14 +98,14 @@ function App(){
 > <summary> JSX에서 onClick 함수 사용</summary>
 >
 > 1) onClick에서 'C'는 대문자로
-> 2) onClick 다음에는 {} 중괄호 사용
-> 3) {} 안에는 함수를 넣어야 함
+> 2) onClick 다음에는 { } 중괄호 사용
+> 3) { } 안에는 함수를 넣어야 함
 > </details>
 
 - **state 변경함수 특징**
-1) 기존 state == 신규 state 가 true라면 동작하지 않음
-2) JavaScript는 call by sharing 특징을 가지고 있으므로, 원시타입인 경우 새로운 저장소에 값이 복사되고 객체타입(array, object, function)의 경우 새로운 저장소에 주소값이 복사됨
-3) 때문에, ***let copiedObj = [...originObj]*** 와 같이 전개(...)연산자(speard operation) 을 사용하여 elelment를 순차적으로 풀어서 저장해야 함. 
+1) **기존 state == 신규 state** 가 **true**라면 동작하지 않음
+2) JavaScript는 **call by sharing** 특징을 가지고 있으므로, 원시타입인 경우 새로운 저장소에 값이 복사되고 객체타입(array, object, function)의 경우 새로운 저장소에 주소값이 복사됨
+3) 때문에, **let copiedObj = [...originObj]** 와 같이 전개(...)연산자(speard operation)를 사용하여 elelment를 풀어서 원시타입으로 저장해야 state변경함수에서 값이 변경된 것을 인지하고 HTML 재렌더링 가능 
 
 > [!NOTE]
 > <details>
@@ -134,8 +134,8 @@ function App(){
 > console.log( originObj == sCopiedObj );   // 결과값: true (originObj이 저장하고 있는 주소값과 sCopiedObj가 저장하고 있는 주소값이 동일) 
 > 
 > // 4. 깊은 복사 (deep copy)
-> let dCopiedObj = [...originObj];          // 전개(...) 연산자를 값을 복사하여 새로운 주소에 저장. 하지만 전개 연산자도 depth-level1까지만 복사 가능
->                                           // depth-level2에 또 다시 객체가 나온다면 다시 주소 값을 복사하여 저장하게 됨 
+> let dCopiedObj = [...originObj];          // 전개(...) 연산자를 사용하여 복사된 값을 새로운 주소에 저장. 하지만 전개 연산자도 depth-level1까지만 복사 가능
+>                                           // 참고: depth-level2에 또 다시 객체가 나온다면 다시 주소 값을 복사하여 저장하게 됨 
 > dCopiedObj.push(5);
 > console.log( originObj );                 // 결과값: [1, 2, 3, 4]
 > console.log( dCopiedObj );                // 결과값: [1, 2, 3, 4, 5]
