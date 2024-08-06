@@ -166,9 +166,9 @@ function App(){
 많은 HTML tag들을 한 단어로 줄이고 싶을 때 사용 => 즉, **반복적인 html 축약/큰 페이지 저장/내용이 매우 자주 변경되는 HTML 사용**하면 됨
 
 ### 문법
-Step 1) function 만듬 (function 이름은 첫글자 대문자로)
-Step 2) 그 함수의 return 안에 축약하고 싶은 html 담기
-Step 3) 원하는 곳에 <함수명/> 사용하면 축약한 html 나옴
+Step 1) function 만듬 (function 이름은 첫글자 대문자로)    
+Step 2) 그 함수의 return 안에 축약하고 싶은 html 담기    
+Step 3) 원하는 곳에 <함수명/> 사용하면 축약한 html 나옴    
 ```JavaScript
 function App (){
   return (
@@ -191,9 +191,9 @@ function Modal () {
 ```
 
 ### 동적인 UI로 활용
-Step 1) html css로 미리 UI 디자인
-Step 2) UI의 현재 상태를 state로 저장
-Step 3) state에 따라서 UI가 어떻게 보일지 조건문 등으로 작성
+Step 1) html css로 미리 UI 디자인    
+Step 2) UI의 현재 상태를 state로 저장    
+Step 3) state에 따라서 UI가 어떻게 보일지 조건문 등으로 작성    
 ```JavaScript
 function App (){
   let [modalState, setModalState] = useState(0);
