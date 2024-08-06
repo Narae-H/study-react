@@ -37,16 +37,17 @@ npx create-react-app [프로젝트명]
 > ```
 > </details>
 
-# State
-### State란?
+# state
+### state란?
 자료를 잠깐 보관하는 곳. state는 변동 사항이 생기면 자동으로 html을 재랜더링 해줌 => 즉, 자주 값이 자주 바뀌어서 재랜더링이 필요한 곳에 쓰면 됨.
 |      특징      |   state                              |  변수                                                |
 |----------------|--------------------------------------|-----------------------------------------------------|
 |     공통점     | 변수를 보관                            | 변수를 보관                                          |
-|     차이점     | 저장된 값이 변경되면 HTML **다시 랜더링 O** | 저장된 값이 변경되도 HTML **다시 랜더링 X** -> 새로 고침 필요|
+|     차이점     | state에 저장된 값이 변경되면 HTML **자동으로 재렌더링 O** | 변수에 저장된 값이 변경되도 HTML **다시 랜더링 X** -> 새로 고침 필요|
 
 ### 문법
-**let[**_변수명, 해당 변수에 값을 넣을 때 쓰는 함수로 set[변수명]으로 작명_**]** = **useState(**_'변수에 넣을 값'_**);**
+- **기본 사용법**   
+**let[**_state이름, state변경 함수 이름으로 함수로 set[변수명]으로 작명_**]** = **useState(**_'state에 넣을 값'_**);**
 ```JavaScript
 (App.js)
 
@@ -65,22 +66,23 @@ function App() {
   )
 }
 ```
-<details>
-<summary>자바스크립트 destructuring 문법</summary>
-  
-array안에 있는 데이터들을를 변수로 쉽게 저장
-```JavaScript
-// Array안의 값들을 하나 하나 변수에 바인딩  
-let array = ['Hyeon', 20];
-let name  = array[0];
-let age   = array[1];
+> [!NOTE]
+> <details>
+> <summary>자바스크립트 destructuring 문법</summary>
+>   
+> ```JavaScript
+> // array안의 데이터들을 하나 하나 변수에 바인딩  
+> let array = ['Hyeon', 20];
+> let name  = array[0];
+> let age   = array[1];
+> 
+> // 위의 코드 대신에 아래와 같이 사용. 왼쪽 오른쪽 형식을 똑같이 맞추면 자동으로 알아서 변수 생성
+> let [name, age] = ['Hyeon', 20]
+> ```
+> </details>
 
-// 위의 코드 대신에 아래와 같이 사용. 왼쪽 오른쪽 형식을 똑같이 맞추면 자동으로 알아서 변수 생성
-let [name, age] = ['Hyeon', 20]
-```
-</details>
-
-
+- **state 변경하는 법**    
+**let[**_state이름, state변경함수 이름_**]** = **useState(**_state에 저장할 값_**)**
 
 
 # Getting Started with Create React App
