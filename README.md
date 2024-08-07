@@ -229,88 +229,101 @@ function Modal () {
 > ```
 > </details>
 
+> [!NOTE]
+> <details>
+> <summary>[].module.css 파일</summary>
+>
+> CSS파일 만들 때, 여러군데에서 겹치는 걸 막기위해서 하나의 js파일에만 종속적인 파일 만들 수 있음
+> 이름을 **App.module.css**와 같이 만들면, App.js에서만 종속되는 파일 생성 가능.
+> </details>
 
 # Props
+
+
+# Hook
+###  Hook 이란?
+Hook은 16.8에서 새롭게 도입된 기능으로 함수형 컴포넌트에서 React state와 생명주기 기능을 연동할 수 있게 해주는 함수.
+내장훅(use로 시작하는 함수)과 custom hooks가 있음 ex) useState(), useEffect()
+
+### Hook 사용이유
+컴포너트 간의 계층을 바꾸지 않고 상태 로직을 재사용 할 수 있음.
+하나의 컴포넌트 생명주기가 아닌 기능을 기반으로 하여 작은 함수 단위로 나눌 수 있음.
+Class 문법 없이도 react 기능 사용 가능
+
+### Hook 규칙/문법
+1) 같은 hook을 여러 번 호출 가능
+```JavaScript
+function App() {
+  let [name, setName] = useState('홍길동');
+  let [age, setAge]   = useState(20); 
+}
+2) 최상위 component에서만 호출 가능, 반복문/조건문/중첩된 함수 내에서 호출하면 안됨
+```JavaScript
+// 좋은 예
+function MyComponent () {
+  let [test, setTest] = useState(123);
+  if ( [조건] ) {
+    [생략]
+  }
+}
+
+// 나쁜 예
+function MyComponent () {
+  if( [조건]) {
+    let [test, setTest] = useState(123);
+  }
+}
+```
+3) 비동기함수 (async 키워드 붙은 함수)는 콜백함수로 사용할 수 없음
+```JavaScript
+function App() {
+  useEffect(async () => {     // 에러 발생: Hook 함수 내에 비동기 함수 쓰였으므로. 
+    await Promise.resolve(1); 
+  })
+}
+``` 
+
+
+# Import/Export
 
 # Route
 
 # UseNavigate
 
+# Lifecycle
+### Lifecycle이란?
+React에서 'mount(페이지 최초로 로딩), update (HTML재랜더링), unmount (다른페이지로 이동)' 3개의 사이클 단계를 거치는데, 특정 단계에서 특정 코드 사용가능.
+그럼 언제 사용할까? => 특정 lifecycle 단계에서 실행하고 싶을 때
 
+### 문법
+useEffect()를 사용하여 react의 lifecycle의 특정 단계에서 관여 가능하며, useEffect()는 component 내의 상태 변화(side effect: 의도하지 않은 결과)가 있을 때 이를 감지하여 특정작업을 해줄 수 있는 훅
+```JavaScript
+function App() {
+  // useEffect() 안에 쓴 코드는 HTML이 전부 다 랜더링이 된 다음에 실행됨.
+  // 크게 아래의 3가지 코드를 이곳에 사용
+  // 1) 시간이 오래 걸리는 작업: JavaScript는 코드를 위에서 아래로 읽으므로 상단에 너무 시간이 오래 걸리는 작업이 있으면 HTML 랜더링이 안됨.
+  // 2) 서버에서 데이터 가져오는 작업들: 데이터를 가져오기전에 HTML 랜더링 먼저되어도 상관없으므로
+  // 3) 타이머 장착하는 것들
 
+  // 1. useEffect()의 두번째 인자로 아무것도 전달안함: mount, update 단계에서 실행. 클래스 컴포넌트의 componentDidMount, componentDidUpdate 과 동일
+  useEffect (() => { })
+
+  // 2. useEffect()의 두번째 인자로 빈 배열 전달:  mount 단계에서 실행. 클래스 컴포넌트의 componentDidMount, componentDidUpdate 과 동일
+  useEffect (() => { }, [])
+
+  // 3. useEffect()의 두번째 인자로 변수 전달: mount와, 인자가 변경될 때(아래코드에서는 count) 실행
+  useEffect (() => { }, [count])
+
+  // 4. useEffect()의 첫번째 인자의 return: unmount 때 실행
+  useEffect (() => { return '' // unmount 될 때 실행 }, [])
+
+  return (
+    [생략]
+  )
+}
+```
 
 # JavaScript참고 문법
 1. map()
 2. sort()
 3. find()
-
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
