@@ -245,10 +245,9 @@ function Modal () {
 Hook은 16.8에서 새롭게 도입된 기능으로 함수형 컴포넌트에서 React state와 생명주기 기능을 연동할 수 있게 해주는 함수.
 내장훅(use로 시작하는 함수)과 custom hooks가 있음 ex) useState(), useEffect()
 
-### Hook 사용이유
+### Hook 사용 이유
 컴포너트 간의 계층을 바꾸지 않고 상태 로직을 재사용 할 수 있음.
 하나의 컴포넌트 생명주기가 아닌 기능을 기반으로 하여 작은 함수 단위로 나눌 수 있음.
-Class 문법 없이도 react 기능 사용 가능
 
 ### Hook 규칙/문법
 1) 같은 hook을 여러 번 호출 가능
