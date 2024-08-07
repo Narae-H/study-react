@@ -256,6 +256,7 @@ function App() {
   let [name, setName] = useState('홍길동');
   let [age, setAge]   = useState(20); 
 }
+```
 2) 최상위 component에서만 호출 가능, 반복문/조건문/중첩된 함수 내에서 호출하면 안됨
 ```JavaScript
 // 좋은 예
