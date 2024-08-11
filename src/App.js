@@ -2,12 +2,16 @@ import { useState } from 'react';
 import './App.css';
 import { Container, Nav, Navbar, Row, Col, Card } from 'react-bootstrap';
 import { Routes, Route, useNavigate, Outlet} from 'react-router-dom';
+import axios from 'axios';
 
 import data from './data.js';
 import DetailPage from './routes/Detail.js';
+import Spinner from './img/spinner.gif'
 
 function App() {
   let [shoes, setShoes]  = useState(data);
+  let [moreCnt, setMoreCnt] = useState(2);
+  let [loading, setLoading] = useState(false);
   let navigate = useNavigate();
 
   return (
@@ -53,6 +57,28 @@ function App() {
                 }
               </Row>
             </Container>
+
+            {
+              (moreCnt >= 2 && moreCnt < 4)?
+              <button onClick={ ()=> {
+                setLoading(true);
+
+                axios.get('https://codingapple1.github.io/shop/data'+ moreCnt +'.json')
+                .then( (res) => {
+                  let modifiedItems = [...shoes, ...res.data];
+                  setShoes(modifiedItems);
+                  setMoreCnt(moreCnt+1);
+                  setLoading(false);
+                })
+                .catch( (e) => {
+                  console.log(e);
+                  setLoading(false);
+                })
+
+              }}>더보기</button>
+              : <p>No more items</p>
+            }
+            { loading? <Loading/>:null }
           </>
 
         } />
@@ -109,6 +135,15 @@ function NaCard( props ) {
         </Card.Body>
       </Card>
     </Col>    
+  )
+}
+
+function Loading(props) {
+  return (
+    <div className='loading'>
+      <p>Loading...</p>
+      <img src={Spinner} alt='loading'/>
+    </div>
   )
 }
 

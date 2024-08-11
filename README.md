@@ -113,10 +113,18 @@ function App(){
 >
 > 괄호를 벗겨서 객체타입을 원시타입으로 바꾸기 위한 연산자
 > ```JavaScript
+> // 예시1: 기본문법
 > let data1 = [1, 2, 3];
-> let data2 = ...data1;
+> let data2 = [...data1];
 > 
 > console.log(data2)     // 결과값: 1, 2, 3
+> 
+> // 예시2: array 데이터 2개 합치고 싶을 때
+> let data1 = [1, 2, 3];
+> let data2 = [4, 5, 6];
+> 
+> let combinedData = [...data1, ...data2]
+> console.log(combinedData);
 > ```
 > </details>
 
@@ -293,32 +301,117 @@ function App() {
 # Lifecycle
 ### Lifecycle이란?
 React에서 'mount(페이지 최초로 로딩), update (HTML재랜더링), unmount (다른페이지로 이동)' 3개의 사이클 단계를 거치는데, 특정 단계에서 특정 코드 사용가능.
-그럼 언제 사용할까? => 특정 lifecycle 단계에서 실행하고 싶을 때
+그럼 언제 사용할까? => 
+1) 특정 lifecycle 단계에서 실행하고 싶을 때 
+2) HTML 랜더링 후 실행하고 싶을 때 (JavaScript는 코드를 위에서 아래로 읽으므로 상단에 너무 시간이 오래 걸리는 작업이 있으면 HTML 랜더링이 안됨)
+3) 서버에서 데이터 가져오는 작업할 때 (데이터를 가져오기전에 HTML 랜더링 먼저되어도 상관없으므로)
+4) 타이머 장착하는 것들
 
 ### 문법
-useEffect()를 사용하여 react의 lifecycle의 특정 단계에서 관여 가능하며, useEffect()는 component 내의 상태 변화(side effect: 의도하지 않은 결과)가 있을 때 이를 감지하여 특정작업을 해줄 수 있는 훅
+useEffect()를 사용하여 react의 lifecycle의 특정 단계에서 관여 가능하며, useEffect()는 component 내의 상태 변화(side effect: 의도하지 않은 결과)가 있을 때 이를 감지하여 특정 작업을 해줄 수 있는 훅
+useEffect( () =>{ [실행할코드] }, [dependency])
 ```JavaScript
 function App() {
-  // useEffect() 안에 쓴 코드는 HTML이 전부 다 랜더링이 된 다음에 실행됨.
-  // 크게 아래의 3가지 코드를 이곳에 사용
-  // 1) 시간이 오래 걸리는 작업: JavaScript는 코드를 위에서 아래로 읽으므로 상단에 너무 시간이 오래 걸리는 작업이 있으면 HTML 랜더링이 안됨.
-  // 2) 서버에서 데이터 가져오는 작업들: 데이터를 가져오기전에 HTML 랜더링 먼저되어도 상관없으므로
-  // 3) 타이머 장착하는 것들
+  // 1. mount + update 될 때마다 실행
+  // 클래스 컴포넌트의 componentDidMount, componentDidUpdate 과 동일
+  useEffect (() => { 실행할코드 })
 
-  // 1. useEffect()의 두번째 인자로 아무것도 전달안함: mount, update 단계에서 실행. 클래스 컴포넌트의 componentDidMount, componentDidUpdate 과 동일
-  useEffect (() => { })
+  // 2. mount 단계 (1회) 실행. (dependency에 빈 배열[] 전달) 
+  // 클래스 컴포넌트의 componentDidMount와 동일
+  useEffect (() => { 실행할코드 }, [])
 
-  // 2. useEffect()의 두번째 인자로 빈 배열 전달:  mount 단계에서 실행. 클래스 컴포넌트의 componentDidMount, componentDidUpdate 과 동일
-  useEffect (() => { }, [])
+  // 3. mount와 + dependency가 변경될 때마다 실행
+  // 클래스 컴포넌트의 componentDidMount, componentDidUpdate 과 동일
+  useEffect (() => { }, [dependency]) // [[dependency]] 는 여러개 넣을 수 있음
 
-  // 3. useEffect()의 두번째 인자로 변수 전달: mount와, 인자가 변경될 때(아래코드에서는 count) 실행
-  useEffect (() => { }, [count])
+  // 4. clean up function: useEffect()안의 코드 실행 전에 return ()=>{}안의 코드를 먼저 실행  => 타이머제거, socket 연결요청 제거, ajax요청 중단 이런 코드를 많이 작성
+  useEffect (() => { 
+    실행할코드2 // 그 다음 실행됨
+    return () => {
+      실행할코드1 //먼저 실행되고
+    } 
+  }
+  // 4-1) useEffect안의 코드 실행 전에 항상 return 안의 코드가 먼저 실행
+  useEffect (() => { 
+    return () => {
+      실행할코드1 
+    }
+  })
 
-  // 4. useEffect()의 첫번째 인자의 return: unmount 때 실행
-  useEffect (() => { return '' // unmount 될 때 실행 }, [])
+  // 4-2) unmout시 1회 실행
+  useEffect( ()=> {
+    return () => {
+      함수1();
+    }
+  }, [])
 
+```
+
+# Ajax (Ansyncronise)
+비동기 서버 요청
+###문법
+아래 3가지 중 1개 쓰면 됨
+1. XMLHttpRequest: 옛날 JavaScript 문법
+2. fetch(): 최근 JavaScript 문법
+3. axios: 외부 라이브러리
+
+### fetch() 사용법
+```JavaScript
+fetch('서버URL')
+  .then( (res)=> { //요청 성공 시,
+    console.log(res.json()) // 결과 값을 json()으로 변환해주는 과정 필요
+  })
+  .catch( (e)= >{ // 요청 실패 시,
+    console.log( e ); 
+  })
+``` 
+
+### axios() 사용법
+1. axios 설치
+  ```
+  npm install axios
+  ```
+2. 장점
+JavaScript 라이브러리로 쉽게 ajax요청 가능. 예를 들어, axios.get()로 데이터 받아온 경우 JSON으로 변환 과정없이 알아서 변환
+2. Get 요청 (데이터 받아오기)
+```JavaScript
+import axios from 'axios'
+
+[생략]
+function App() {
   return (
-    [생략]
+    <>
+      <button onClick={ () => {
+        axios.get('서버URL')
+            .then( (res) => {
+              // 서버요청결과: 'res.data'에 데이터 있음
+            })
+            .catch( ()=> {
+              // 실패했을때 코드
+            })
+      }}>한개 요청해서 데이터 받아오기(Get)</button>
+
+      <button onClick={ () => {
+        Promise.all( [axios.get('서버URL1'), axios.get('서버URL2')] )
+        .then() // 서버 URLs 전부 다 성공했을 떄 실행
+        .catch()
+      }}>여러개 요청해서 데이터 받아오기(Get, Promise)</button>
+    </>
+  )
+}
+```
+3. Post 요청 (데이터 보내기)
+```JavaScript
+import axios from 'axios'
+
+[생략]
+function App() {
+  return (
+    <>
+      <button onClick={ () => {
+        axios.post('서버URL', [서버로보낼 데이터셋])
+      }}>데이터 보내기(Post)</button>
+    </>
   )
 }
 ```
@@ -327,3 +420,4 @@ function App() {
 1. map()
 2. sort()
 3. find()
+4. forEach()
