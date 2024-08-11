@@ -246,7 +246,28 @@ function Modal () {
 > </details>
 
 # Props
+자식이 부모의 state 가져다가 쓰고 싶을 때
 
+### 문법
+Step 1) <자식컴포넌트이름 작명={state이름}>    
+Step 2) 자식컴포넌트에서 props 받아와서 사용
+```JavaScript
+function App() {
+  let [val, setVal] = useState('test');
+
+  return (
+    <div>
+      <Child val={val}/>
+    </div>
+  )
+}
+
+function Child(props) {
+  return (
+    <p>{props.val}</p>
+  )
+}
+```
 
 # Hook
 ###  Hook 이란?
@@ -298,17 +319,20 @@ function App() {
 
 # UseNavigate
 
-# Lifecycle
+# Lifecycle을 제어함수: useEffect()
 ### Lifecycle이란?
-React에서 'mount(페이지 최초로 로딩), update (HTML재랜더링), unmount (다른페이지로 이동)' 3개의 사이클 단계를 거치는데, 특정 단계에서 특정 코드 사용가능.
-그럼 언제 사용할까? => 
-1) 특정 lifecycle 단계에서 실행하고 싶을 때 
-2) HTML 랜더링 후 실행하고 싶을 때 (JavaScript는 코드를 위에서 아래로 읽으므로 상단에 너무 시간이 오래 걸리는 작업이 있으면 HTML 랜더링이 안됨)
-3) 서버에서 데이터 가져오는 작업할 때 (데이터를 가져오기전에 HTML 랜더링 먼저되어도 상관없으므로)
-4) 타이머 장착하는 것들
+React에서 일어나는 'mount(페이지 최초로 로딩), update (HTML재랜더링), unmount (다른페이지로 이동)' 3개의 단계
 
-### 문법
-useEffect()를 사용하여 react의 lifecycle의 특정 단계에서 관여 가능하며, useEffect()는 component 내의 상태 변화(side effect: 의도하지 않은 결과)가 있을 때 이를 감지하여 특정 작업을 해줄 수 있는 훅
+### Lifecycle의 특정 단계에 어떻게 코드가 실행되게 할 수 있을까?
+- useEffect()사용 
+- 언제 useEffect()를 사용하면 될까?
+  1) 특정 lifecycle 단계에서 실행하고 싶을 때 
+  2) HTML 랜더링 후 실행하고 싶을 때 (JavaScript는 코드를 위에서 아래로 읽으므로 상단에 너무 시간이 오래 걸리는 작업이 있으면 HTML 랜더링이 안됨)
+  3) 서버에서 데이터 가져오는 작업할 때 (데이터를 가져오기전에 HTML 랜더링 먼저되어도 상관없으므로)
+  4) 타이머 장착하는 것들
+
+### useEffect() 문법
+useEffect()는 상태 변화(side effect: 의도하지 않은 결과)가 있을 때 이를 감지하여 특정 작업을 해줄 수 있는 훅
 useEffect( () =>{ [실행할코드] }, [dependency])
 ```JavaScript
 function App() {
@@ -347,13 +371,14 @@ function App() {
 
 ```
 
-# Ajax (Ansyncronise)
-비동기 서버 요청
-###문법
+# Ajax (Asynchronous Javascript And XML)
+JavaScript를 통해서 서버에 데이터를 비동기 방식으로 요청
+
+### 문법
 아래 3가지 중 1개 쓰면 됨
 1. XMLHttpRequest: 옛날 JavaScript 문법
-2. fetch(): 최근 JavaScript 문법
-3. axios: 외부 라이브러리
+2. [fetch](#fetch-사용법): 최근 JavaScript 문법
+3. [axios](#axios-사용법): 외부 라이브러리
 
 ### fetch() 사용법
 ```JavaScript
@@ -416,8 +441,122 @@ function App() {
 }
 ```
 
-# JavaScript참고 문법
-1. map()
-2. sort()
-3. find()
-4. forEach()
+# 유용한 JavaScript 문법
+### forEach()
+반복문처럼 사용. object/array의 자료 개수만큼 안의 코드 실행
+**obj.forEach( (**[element], [index], [array])=>{}**)**
+```JavaScript
+let testObj = [{"id": 1, "name": "name1", "phone": "123-456-789"},
+               {"id": 2, "name": "name2", "phone": "234-567-890"},
+               {"id": 3, "name": "name3", "phone": "345-678-901"}
+              ];
+
+testObj.forEach( (item, index)=>{
+  console.log(item);  // {"id": 1, "name": "name1", "phone": "123-456-789"}, {"id": 2, "name": "name2", "phone": "234-567-890"}, {"id": 3, "name": "name3", "phone": "345-678-901"}
+  console.log(index); // 1, 2, 3
+})
+```
+
+### map()
+반복문처럼 사용. object/array의 자료 개수만큼 안의 코드 실행
+**obj.map( (**[element], [index], [array])=>{}**)**
+```JavaScript
+let testObj = [{"id": 1, "name": "name1", "phone": "123-456-789"},
+               {"id": 2, "name": "name2", "phone": "234-567-890"},
+               {"id": 3, "name": "name3", "phone": "345-678-901"}
+              ];
+
+testObj.map( (item, index)=>{
+  console.log(item);  // {"id": 1, "name": "name1", "phone": "123-456-789"}, {"id": 2, "name": "name2", "phone": "234-567-890"}, {"id": 3, "name": "name3", "phone": "345-678-901"}
+  console.log(index); // 1, 2, 3
+})
+```
+
+> [!NOTE]
+> <details>
+> <summary> forEach() vs map() </summary>
+> |      특징      |   forEach()                                     |  map()                                                            |
+> |----------------|------------------------------------------------|--------------------------------------------------------------------|
+> |    문법        | obj.forEach( ([원소의값], [인덱스], [현재배열])=>{}) | obj.map( ([원소의값], [인덱스], [현재배열])=>{}) |
+> |    특징        | 반복문 (array/object 각 요소에 대해 작업을 수행)  | 반복문 (array/object 각 요소를 반환하여 새로운 객체를 생성)           |
+> |    공통점      | 원본 객체를 변경하지 않음                         | 원본 객체를 변경하지 않음                                           |
+> |    차이점      |  리턴값 없음(undefined)                          | 리턴값 있음                                                        | 
+>
+> ```JavaScript
+> let arr = [1, 2, 3];
+> // 1. 리턴값 비교
+> // 1-1) forEach()
+> let f = arr.forEach( (val) =>{
+>   return val+1;
+> })
+> console.log(f); // undefined
+>
+> // 1-2) map()
+> let m = arr.map( (val)=> {
+>   return val+1; 
+> })
+> console.log(m) //[2, 3, 4]
+>
+> 
+> // 2. 특정 객체의 값을 변경하고 싶을 때
+> // 2-1) forEach()
+> let newArr1 = [];
+> arr.forEach( (val)=>{ newArr1.push(val*2) })
+> console.log(newArr1) // [2, 4, 6]
+>
+> // 2-2) map()
+> let newArr2 = arr.map( (val)=>{ val*2 })
+> console.log(newArr2); // [2, 4, 6]
+> ```
+> </details>
+
+
+
+### sort()
+array/object의 자료 정렬 함수
+**obj.sort(** ([element1], [element2]) => {} **)**
+```JavaScript
+// 1. 기본 사용법
+let arr = [4, 2, 6];
+
+arr.sort();
+console.log(arr); // 2, 4, 6
+
+// 2. 사용자 정의 함수: 이름순으로 정렬하고 싶다면?
+let arr=[{ "id": 1, name: "Kim"},
+         { "id": 2, name: "Hyeon"},
+         { "id": 3, name: "Ahn"}
+        ];
+arr.sort( (a, b)=>{
+  const nameA = a.name.toUpperCase();  
+  const nameB = b.name.toUpperCase();
+
+  if( nameA > nameB )  return 1;
+  if( nameA < nameB )  return -1;
+
+  return 0; // 반드시 리턴있어야 하므로
+  
+});
+console.log(arr) // [{ "id": 3, name: "Ahn"}, { "id": 2, name: "Hyeon"}, { "id": 1, name: "Kim"}]      
+
+// 3. ascii 문자가 아닌 경우 비교
+let arr2 = ["réservé", "premier", "communiqué", "café", "adieu", "éclair"];
+arr2.sort( (a, b) => a.localeCompare(b) );
+console.log( err2 ); // ['adieu', 'café', 'communiqué', 'éclair', 'premier', 'réservé']
+```
+
+### find()
+array/object에서 특정 자료 찾음
+**obj.find(** ([element], [index], [array]) => {} **)**
+```JavaScript
+const inventory = [
+  { name: "apples", quantity: 2 },
+  { name: "bananas", quantity: 0 },
+  { name: "cherries", quantity: 5 },
+];
+
+let foundCherries = inventory.find( (ele, index)=>{ ele.name === "cherries" });
+
+console.log( foundCherries ); // { name: 'cherries', quantity: 5 }
+```
+
