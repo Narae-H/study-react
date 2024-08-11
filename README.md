@@ -348,8 +348,8 @@ React에서 일어나는 'mount(페이지 최초로 로딩), update (HTML재랜�
   4) 타이머 장착하는 것들
 
 ### useEffect() 문법
-useEffect()는 상태 변화(side effect: 의도하지 않은 결과)가 있을 때 이를 감지하여 특정 작업을 해줄 수 있는 훅
-useEffect( () =>{ [실행할코드] }, [dependency])
+useEffect()는 상태 변화(side effect: 의도하지 않은 결과)가 있을 때 이를 감지하여 특정 작업을 해줄 수 있는 훅.
+**useEffect( () =>{** [실행할코드] }, [dependency]**)**
 ```JavaScript
 function App() {
   // 1. mount + update 될 때마다 실행
@@ -408,13 +408,14 @@ fetch('서버URL')
 ``` 
 
 ### axios() 사용법
+JavaScript 의 문법인 fetch()를 보다 쉽게 사용하기 위한 외부라이브러리. 예를 들어, axios.get()로 데이터 받아온 경우 JSON으로 변환 과정없이 필요없이 알아서 JSON으로 변환해줌.
 1. axios 설치
   ```
   npm install axios
   ```
-2. 장점
-JavaScript 라이브러리로 쉽게 ajax요청 가능. 예를 들어, axios.get()로 데이터 받아온 경우 JSON으로 변환 과정없이 알아서 변환
-2. Get 요청 (데이터 받아오기)
+
+2. 사용법
+- Get 요청 (데이터 받아오기)
 ```JavaScript
 import axios from 'axios'
 
@@ -441,7 +442,7 @@ function App() {
   )
 }
 ```
-3. Post 요청 (데이터 보내기)
+- Post 요청 (데이터 보내기)
 ```JavaScript
 import axios from 'axios'
 
@@ -475,7 +476,7 @@ But, 실전에서 많이 사용하지 않음 => 왜냐면, 성능 이슈가 있�
 > <Summary> 성능 & 컴포넌트 재활용 이슈?</Summary>
 >
 > 1. 성능이슈: State 변경 시 쓸데없는 컴포넌트까지 전부 재렌더링. ex) 데이터는 넘겼지만 아직 데이터를 보여주는 곳이 없는데, 데이터를 넘겼다는 이유만으로 전부 다 재렌더링.
-> 2. 컴포넌트 재활용 이슈: Component 내에 ***let {stock} = useContext(Context1)***가 있으므로, 다른 부모에서 호출하려면 ***stock, Context1***등 정의안된 state 때문에 에러날 수 있음.  
+> 2. 컴포넌트 재활용 이슈: Component 내에 Context를 가져오는 부분(let {stock} = useContext(Context1))이 있고, 다른 부모에서 해당 component 호출하려면 'stock, Context1'등을 다시 정의해줘야 함. 부모에서 전달이 안되어서 정의가 되어있지 않다면 에러발생.  
 > </Details>
 
 ### 사용방법
