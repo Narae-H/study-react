@@ -252,22 +252,38 @@ function Modal () {
 Step 1) <자식컴포넌트이름 작명={state이름}>    
 Step 2) 자식컴포넌트에서 props 받아와서 사용
 ```JavaScript
+
 function App() {
   let [val, setVal] = useState('test');
 
   return (
     <div>
-      <Child val={val}/>
+      <Child1 val={val}/>
+      <Child2 val={val}/>
     </div>
   )
 }
 
-function Child(props) {
+// 방법1) 파라미터 1개만 받아오기(일반적으로 자식컴포넌트의 파라미터는 props로 작명)
+function Child1(props) {
   return (
     <p>{props.val}</p>
   )
 }
+
+// 방법2) 바로 특정 state 이름으로 받아오기
+function Child2({val}) { // function Child2({val1, val2, val3}) 이렇게 여러개 받아오는것도 가능 
+  return (
+    <p>{val}</p>
+  )
+}
 ```
+
+### Props의 단점
+데이터는 '부모 -> 자식'만 절달 가능. 만약, '부모 -> 자식 -> 증손자' 에게 전달하고 싶다면? -> 부모에서 자식한테 전달하고 자식이 다시 증손자한테 전달하는건 너무나도 귀찮고 자식이 많아지고 depth도 깊어진다면 찾기도 힘듬.     
+그럴때 쓸 수 있는것?     
+1) [Context API (리액트 기본문법)](#context-api)
+2) [Redux등 외부라이브러리](#redux)
 
 # Hook
 ###  Hook 이란?
@@ -440,6 +456,64 @@ function App() {
   )
 }
 ```
+
+> [!NOTE]
+> <details>
+> <summary> Automatic batching </summary>
+>
+> React **18버전 이상** 부터는, state 변경함수들이 연달아서 여러개 처리되어야한다면 state 변경함수를 다 처리하고 마지막에 한 번만 재렌더링. 
+> 만약, 근접해 있는 state 변경함수를 다 처리하고 싶다면,
+> 1) setTimeout()으로 시간 차 주거나
+> 2) flushSync() 를 사용하여 동기적 업데이트 진행
+> </details>
+
+# Context API
+'부모-> 자식'으로 데이터 전송을 쉽게하기 위한 state의 보관함.   
+But, 실전에서 많이 사용하지 않음 => 왜냐면, 성능 이슈가 있고 컴포넌트 재활용이 힘듬 => [Redux](#redux)를 쓰자!
+> [!Note]
+> <Details>
+> <Summary> 성능 & 컴포넌트 재활용 이슈?</Summary>
+>
+> 1. 성능이슈: State 변경 시 쓸데없는 컴포넌트까지 전부 재렌더링. ex) 데이터는 넘겼지만 아직 데이터를 보여주는 곳이 없는데, 데이터를 넘겼다는 이유만으로 전부 다 재렌더링.
+> 2. 컴포넌트 재활용 이슈: Component 내에 ***let {stock} = useContext(Context1)***가 있으므로, 다른 부모에서 호출하려면 ***stock, Context1***등 정의안된 state 때문에 에러날 수 있음.  
+> </Details>
+
+### 사용방법
+```JavaScript
+(App.js)
+// 1. createContext() 사용하여 context 생성
+export let Context1 = createContext();
+
+function App(){
+   let[stock, setStock] = useState([10, 14, 10]);
+
+   return(
+     <>
+      // 2. Context1로 데이터 전달해주고 싶은 자식을 감쌈
+      <Context1.Provider value={{ stock }}>
+        <Children/>
+      </Context1.Provider>
+    </>
+   )
+}
+
+(Children.js)
+import {useState, useEffect, useContext} from 'react';
+// 3. Context1을 import
+import {Context1} from './../App.js';
+
+function Children(){
+  //4. useContext()를 사용하여 꺼내고 싶은 데이터 꺼냄
+  let {stock} = useContext(Context1)
+
+  return (
+    <div>{stock}</div>
+  )
+}
+```
+
+
+# Redux 
 
 # 유용한 JavaScript 문법
 ### forEach()

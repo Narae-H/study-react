@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Row, Tab, Tabs } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+
+import { Context1 } from './../App.js'
 
 function DetailPage ( props ) {
   let {id} = useParams();
@@ -8,6 +10,9 @@ function DetailPage ( props ) {
   // let [count, setCount] = useState(0);
   // let [input, setInput] = useState('');
   let [tab, setTab] = useState('home');
+  let [fade, setFade] = useState('');
+
+  let {stock} = useContext( Context1 );
 
   // useEffect (() => {
   //   if( isNaN(input) ) { console.log("그러지 마세요") }
@@ -16,8 +21,16 @@ function DetailPage ( props ) {
   //   }
   // }, [input])
 
+  useEffect( ()=>{
+    setTimeout(setFade('end'), 100);
+
+    return( ()=>{
+      setFade('');
+    })
+  },[])
+
   return (
-    <div className="container">
+    <div className={'container start ' + fade }>
       {/* { alert? <div className="alert alert-warning">2초 뒤 숨겨줫!</div> : null } */}
       {/* {count} */}
       {/* <button onClick={ () => { setCount( count ++ )}}>버튼</button> */}
@@ -52,7 +65,17 @@ function DetailPage ( props ) {
           </Tab>
 
         </Tabs>
+
+        <GrandChildren shoes={props.shoes}/>
     </div>   
+  )
+}
+
+function GrandChildren({shoes}) {
+  let {stock} = useContext( Context1 );
+  
+  return (
+    <p>{stock[0]}</p>
   )
 }
 
