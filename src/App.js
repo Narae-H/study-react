@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { createContext, useState } from 'react';
 import './App.css';
 import { Container, Nav, Navbar, Row, Col, Card } from 'react-bootstrap';
 import { Routes, Route, useNavigate, Outlet} from 'react-router-dom';
@@ -8,8 +8,11 @@ import data from './data.js';
 import DetailPage from './routes/Detail.js';
 import Spinner from './img/spinner.gif'
 
+export let Context1 = createContext()
+
 function App() {
   let [shoes, setShoes]  = useState(data);
+  let [stock, setStock]  = useState([10, 11, 12]); // Context API로 전달해보자
   let [moreCnt, setMoreCnt] = useState(2);
   let [loading, setLoading] = useState(false);
   let navigate = useNavigate();
@@ -83,7 +86,11 @@ function App() {
 
         } />
 
-        <Route path='/detail/:id' element={ <DetailPage shoes={shoes}/> } />
+        <Route path='/detail/:id' element={ 
+          <Context1.Provider value={{stock}}>
+            <DetailPage shoes={shoes}/> 
+          </Context1.Provider>
+        } />
 
         <Route path='/about' element={ <About/> }>
           <Route path='member' element={<div>Memeber</div>}/>
