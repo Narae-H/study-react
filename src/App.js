@@ -6,6 +6,7 @@ import axios from 'axios';
 
 import data from './data.js';
 import DetailPage from './routes/Detail.js';
+import Cart from './routes/Cart.js';
 import Spinner from './img/spinner.gif'
 
 export let Context1 = createContext()
@@ -25,6 +26,7 @@ function App() {
           <Nav className="me-auto">
             <Nav.Link onClick={() => { navigate("/")}}>Home</Nav.Link>
             <Nav.Link onClick={() => { navigate("/detail")}}>Detail</Nav.Link>
+            <Nav.Link onClick={() => { navigate("/cart")}}>Cart</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
@@ -91,6 +93,8 @@ function App() {
             <DetailPage shoes={shoes}/> 
           </Context1.Provider>
         } />
+
+        <Route path="/cart" element={ <Cart/>}/>
 
         <Route path='/about' element={ <About/> }>
           <Route path='member' element={<div>Memeber</div>}/>
