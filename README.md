@@ -514,7 +514,91 @@ function Children(){
 ```
 
 
-# Redux 
+# Redux
+모든 components가 props 없이 state 공유 가능. store.js에 모든 state가 저장되어 있음. 
+
+### 설치 및 셋팅
+1. Redux 설치
+```
+npm install @reduxjs/toolkit@1.8.1 react-redux
+```
+
+2. src/store.js 파일생성 & 하단코드 복붙
+```JavaScript
+import { configureStore } from '@reduxjs/toolkit'
+
+export default configureStore({
+  reducer: { }
+}) 
+```
+
+3. index.js에 가서 redux 쓰겠다고 선언해주기 
+ - store.js에서 썼던 configureStore import 
+ - <Provider store={store}></Provider>로 감싸기
+```JavaScript
+import store from './store.js'
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <Provider store={store}>
+    <React.StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </React.StrictMode>
+  </Provider>
+);
+```
+
+### 사용법
+1. Redux store에 state 보관
+```JavaScript
+(store.js)
+import { configureStore, createSlice } from '@reduxjs/toolkit'
+
+// step 1. createSlice() 사용해서 저장하고 싶은 state만들기 (createSlice()와 useState()가 용도비슷)
+// { name : 'state이름', initialState : 'state값' }
+let userName = createSlice({
+  name: "userName",
+  initialState: "kim" 
+})
+
+// 2. configureStore()에 생성한 state 등록. 여기 등록한 state는 모든 컴포넌트가 자유롭게 사용가능
+// { 작명 : createSlice만든거.reducer } 
+export default configureStore({
+  reducer: { 
+    userName: userName.reducer
+
+  }
+}) 
+```
+
+2. Redux store에 있는 state 사용
+**useSelector( (state)=>{ return state} )** 사용하여 redux store에 있는 모든 state가져 옴.
+```JavaScript
+(Cart.js)
+import { useSelector } from 'react-redux';
+
+function Cart() {
+  // 아래 3가지 다 동일한 결과값. 편한것으로 사용
+  let {userName} = useSelector( (state)=>{ state } );
+  let userName1 = useSelector( (state)=>{ return state.userName });
+  let userName2 = useSelector( (state)=> state.userName );
+  
+  console.log(userName);
+
+  return(
+    [생략]
+  )
+}
+```
+
+> [!Note]
+> Redux store안에 모든걸 넣지는 말기! 컴포넌트간 공유가 필요없으면 그냥 useState()쓰면 되니깐.
+
+3. store의 state 변경
+
+
 
 # 유용한 JavaScript 문법
 ### forEach()
