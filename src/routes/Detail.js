@@ -3,6 +3,8 @@ import { Row, Tab, Tabs } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 
 import { Context1 } from './../App.js'
+import { useDispatch } from "react-redux";
+import { addItem } from "../store.js";
 
 function DetailPage ( props ) {
   let {id} = useParams();
@@ -13,6 +15,8 @@ function DetailPage ( props ) {
   let [fade, setFade] = useState('');
 
   let {stock} = useContext( Context1 );
+
+  let dispatch = useDispatch();
 
   // useEffect (() => {
   //   if( isNaN(input) ) { console.log("그러지 마세요") }
@@ -45,7 +49,7 @@ function DetailPage ( props ) {
             <h4 className="pt-5">{shoesItem.title}</h4>
             <p>{shoesItem.content}</p>
             <p>{shoesItem.price}원</p>
-            <button className="btn btn-danger">주문하기</button> 
+            <button className="btn btn-danger" onClick={ ()=>{ dispatch( addItem(shoesItem) )}}>주문하기</button> 
           </div>
           </div>
         ):null}
