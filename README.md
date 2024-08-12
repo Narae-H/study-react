@@ -550,8 +550,21 @@ root.render(
 );
 ```
 
+### 용어
+- State
+컴포넌트에서 자동 재렌더링 하기위해 사용되는 데이터
+
+- Action
+함수 객체
+
+- Reducers
+Action들을 모아 놓는 곳?. state를 변경하기 위해서 사용
+
+- payload 
+화물, 소포. 파라미터 받아올 때.
+
 ### 사용법
-1. Redux store에 state 보관
+1. Redux store에 state 보관법
 ```JavaScript
 (store.js)
 import { configureStore, createSlice } from '@reduxjs/toolkit'
@@ -573,7 +586,7 @@ export default configureStore({
 }) 
 ```
 
-2. Redux store에 있는 state 사용
+2. Redux store에 있는 state 사용법
 **useSelector( (state)=>{ return state} )** 사용하여 redux store에 있는 모든 state가져 옴.
 ```JavaScript
 (Cart.js)
@@ -596,7 +609,122 @@ function Cart() {
 > [!Note]
 > Redux store안에 모든걸 넣지는 말기! 컴포넌트간 공유가 필요없으면 그냥 useState()쓰면 되니깐.
 
-3. store의 state 변경
+3. store의 state 변경법
+- initialState 가 object/array가 아닌경우
+step 1.  'reducers'에 state 수정해주는 함수 만들고 export
+**export let {** [만든함수이름] **} =** [변수]**.actions**
+```JavaScript
+(store.js)
+import { configureStore, createSlice } from '@reduxjs/toolkit'
+
+let userName = createSlice({
+  name: "userName",
+  initialState: "Kim",
+  reducers: {
+    changeName(state) {
+      return "John" + state //John Kim
+    },
+    fun1(state){
+      return ''
+    }
+  } 
+})
+export let { changeName } = userName.actions
+```
+step 2. 만든함수 import해서 사용
+***let dispatch = useDispatch();***       
+***dispatch(*** [함수이름] ***)***
+```JavaScript
+(child.js)
+import { changeName } from '../store';
+
+function Child() {
+  let dispatch = useDispatch(); // useDispatch(): store.js로 요청보내주는 함수
+
+  return(
+    <>
+      <button onClick={ ()=> dispatch( changeName() ) }>변경</button>
+    </>
+  )
+}
+```
+
+- initialState 가 object/array인 경우
+**state.**[객체키]로 접근
+```JavaScript
+let user = createSlice({
+  name: "user",
+  initialState: { name: "Kim", age: 20 },
+  reducers: {
+    changeName(state) {
+      state.name = "park" // Immer.js라는 라이브러리가 자동으로 설치가 되어서, 알아서 state 복사본을 복사해서 리턴해줌
+    },
+    addAge(state) {
+      state.age += 1
+    }
+  } 
+})
+export let { changeName, incAge } = user.actions
+```
+- 파라미터로 값을 전달 받고 싶은 경우
+**action.payload**사용
+```JavaScript
+let user = createSlice({
+  name: "user",
+  initialState: { name: "Kim", age: 20 },
+  reducers: {
+    incAge(state, action) {
+      state.age += action.payload
+    }
+  } 
+})
+export let { incAge } = user.actions
+```
+
+4. Import/Export
+store.js가 너무 길어져서 파일 분리하고 싶다면? => 예를들어, store.js 부분 중 user부분 분리하고 싶음.   
+
+1) step1. src 밑에 폴더랑 파일 새로 만들기: src/store/[Slice이름]Slice.js ex) userSlice.js
+2) 분리하고 싶은 코드 자르기
+ex)
+```Javascript
+(store.js 에서 user 부분 자르기)
+let user = createSlice({
+  name: "user",
+  initialState: { name: "Kim", age: 20 },
+  reducers: {
+    changeName(state) {
+      state.name = "park"
+    },
+    incAgeBy1(state) {
+      state.age += 1
+    },
+    incAge(state, action) {
+      state.age += action.payload
+    }
+  } 
+})
+export let { changeName, incAgeBy1, incAge } = user.actions
+```
+3) 새롭게 만든 userSlice.js에 붙여넣고 createSlice() 등 필요한 함수 import
+    다른곳에서 쓰기 위해서 actions들과 user slice 객체 export
+```JavaScript
+import { createSlice } from "@reduxjs/toolkit"
+
+let user = createSlice({
+  [생략: 위랑 동일]
+})
+export let { changeName, incAgeBy1, incAge } = user.actions
+
+export default user
+```
+4) 필요한 곳에서 사용
+
+
+
+
+
+
 
 
 

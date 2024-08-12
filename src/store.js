@@ -1,26 +1,68 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
+import user from './store/userSlice'
 
-let userName = createSlice({
-  name: "userName",
-  initialState: "kim" 
-})
+// let user = createSlice({
+//   name: "user",
+//   initialState: { name: "Kim", age: 20 },
+//   reducers: {
+//     changeName(state) {
+//       state.name = "park"
+//     },
+//     incAgeBy1(state) {
+//       state.age += 1
+//     },
+//     incAge(state, action) {
+//       state.age += action.payload
+//     }
+//   } 
+// })
+// export let { changeName, incAgeBy1, incAge } = user.actions
 
 let stockList = createSlice({
   name: "stock",
-  initialState: [10, 11, 12]
+  initialState: [10, 11, 12],
+  reducers: {
+    changeStocks (state, action) {
+      let copiedState = [...state]
+      return copiedState[action.payload]+1;
+    }
+  }
 })
+export let { changeStocks } = stockList.actions
 
 let cartItems = createSlice({
   name: "cartItems", 
   initialState: [
     {id: 0, name: 'White and Black', count: 2},
     {id: 2, name: 'Grey Yordan', count: 1}
-  ]
+  ],
+  reducers: {
+    setCartItems (state, action){
+      state.map( (item, i)=>{ 
+        item.id = action.payload[i].id
+        item.name = action.payload[i].name
+        item.count = action.payload[i].count
+      })
+    },
+    addItem (state, action){
+      let newItem = { 
+        id: action.payload.id,
+        name: action.payload.title,
+        count: 0
+       }
+      state.push(newItem);
+    },
+    incCountBy1 (state, action) {
+      let foundItem = state.find( (item, i)=>{ return  item.id == action.payload })
+      foundItem.count += 1
+    }
+  }
 })
+export let { setCartItems, addItem, incCountBy1 } = cartItems.actions
 
 export default configureStore({
   reducer: { 
-    userName : userName.reducer,
+    user : user.reducer,
     stockList: stockList.reducer,
     cartItems: cartItems.reducer 
   }
