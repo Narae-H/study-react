@@ -229,12 +229,84 @@ function Modal () {
 ```
 > [!NOTE]
 > <details>
-> <summary>JSX의 조건문</summary>
+> <summary>JSX의 조건문 5가지</summary>
 >
-> JSX 안에서는 if/else 문법을 바로 사용할 수 없음. 대신에 삼항연산자를 { }에서 사용가능
-> ```JavaScript
-> { 2 > 1 ? console.log('맞음): console.log('틀림') }
+> JSX 내에서 `<p>`if(조건문) {}`</p>` 이렇게 쓰는것 불가능하기 때문에 생겨난 패턴
+>
+> 1. return() 밖에서 쓰는 if/else    
+> **return + JSX전체**를 뱉는 if 문 작성
+> ```Javascript
+> function Component() {
+>  if ( true ) {
+>    return <p>참이면 보여줄 HTML</p>;
+>  } else {
+>    return null;
+>  }
+> } 
 > ```
+>
+> 2. return() 안에서 쓰는 삼항연산자 (ternary operator)    
+> JSX의 return 안에서 쓰고싶다면 삼항연산자 사용
+> ```JavaScript
+> function Component() {
+>   return (
+>     <div>
+>       {
+>         2 > 1 ? <p>참</p>: <p>거짓</p> 
+>       }
+>     </div>
+>   )
+> }
+> ```
+>
+> 3. && 연산자로 if 역할 대신    
+> JavaScript에서 **&&** 연산자는 처음등장하는 false값을 찾아주므로, 이것을 활용 
+> ```JavaScript
+> function Component() {
+>   return (
+>     <div>
+>       { 1 === 1 && <p>참이면 보여줄 HTML</p> }
+>     </div>
+>   )
+> }
+>```
+>
+> 4. switch/case 조건문    
+> ```JavaScript
+> function Component2(){
+>   var user = 'seller';
+>   switch (user){
+>     case 'seller' :
+>       return <h4>판매자 로그인</h4>
+>     case 'customer' :
+>       return <h4>구매자 로그인</h4>
+>     default : 
+>       return <h4>그냥 로그인</h4>
+>   }
+> }
+> ```
+>
+> 5. object/array 자료형 응용    
+> object에 내가 보여주고 싶은 자료 다 담고, 키 값이 되는 state 만들어서 쓰기 
+> ```JavaScript
+> var tabs = { 
+>   info : <p>상품정보</p>,
+>   shipping : <p>배송관련</p>,
+>   refund : <p>환불약관</p>
+> }
+> 
+> function Component() {
+>   let [currentTab, setCurrentTab] = useState('info');
+>   return (
+>     <div>
+>       {
+>         tabs[currentTab]
+>       }
+>     </div>
+>   )
+> } 
+> ```
+> 
 > </details>
 
 > [!NOTE]
