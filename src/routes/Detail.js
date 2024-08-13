@@ -40,7 +40,7 @@ function DetailPage ( props ) {
       {/* {count} */}
       {/* <button onClick={ () => { setCount( count ++ )}}>버튼</button> */}
       {
-        (id >= 0 && id <=2) ? 
+        (id >= 0 && id <= props.shoes.length) ? 
         (<div className="row">
           <div className="col-md-6">
             <img src={"https://codingapple1.github.io/shop/shoes" + (shoesItem.id+1) + ".jpg"} width="100%" alt="detailedImage"/>

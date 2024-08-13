@@ -1,7 +1,7 @@
 import { createContext, useState } from 'react';
 import './App.css';
 import { Container, Nav, Navbar, Row, Col, Card } from 'react-bootstrap';
-import { Routes, Route, useNavigate, Outlet} from 'react-router-dom';
+import { Routes, Route, useNavigate, Outlet, Link} from 'react-router-dom';
 import axios from 'axios';
 
 import data from './data.js';
@@ -17,7 +17,7 @@ function App() {
   let [moreCnt, setMoreCnt] = useState(2);
   let [loading, setLoading] = useState(false);
   let navigate = useNavigate();
-
+  
   return (
     <div className="App">
       <Navbar bg="dark" data-bs-theme="dark">
@@ -92,7 +92,7 @@ function App() {
           <>
             {
               shoes.map( (item, i)=>{
-                return <p key={i}><a href={"/detail/" + item.id}>{item.title}</a></p>
+                return <p key={i}><Link key={i} to={"/detail/" + item.id}>{item.title}</Link></p>
               })
             }
           </>
@@ -117,10 +117,6 @@ function App() {
 
         <Route path='*' element={<div>404 Error</div>}/>
       </Routes>
-
-
-
-
     </div>
   );
 }
@@ -144,14 +140,30 @@ function About() {
 }
 
 function NaCard( props ) {
+  let navigate = useNavigate();
   return (
     <Col md={4}>
-      <Card>
+      <Card onClick={()=> {
+          // 1. Add watched items in the local storage
+          let watched    = localStorage.getItem('watched');
+          let watchedArr = (watched != null)? JSON.parse(localStorage.getItem('watched')):[];
+
+          let index = watchedArr.findIndex( (item) => item == props.item.id );
+          if( index >= 0 ){ watchedArr.splice(index, 1) }
+          
+          watchedArr.push(props.item.id);
+
+          localStorage.removeItem('watched');
+          localStorage.setItem('watched', JSON.stringify(watchedArr));
+
+          // 2. Move to the following link
+          navigate("/detail/"+props.item.id);
+        }}>
         <Card.Img variant="top" src={"https://codingapple1.github.io/shop/shoes" + (props.item.id + 1) + ".jpg"} />
         <Card.Body>
           <Card.Title><h4>{props.item.title}</h4></Card.Title>
           <Card.Text>
-          {props.item.content}
+            {props.item.content}
           </Card.Text>
         </Card.Body>
       </Card>
