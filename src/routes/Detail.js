@@ -13,7 +13,7 @@ function DetailPage ( props ) {
   // let [input, setInput] = useState('');
   let [tab, setTab] = useState('home');
   let [fade, setFade] = useState('');
-
+  let [alert, setAlert] = useState(true);
   let {stock} = useContext( Context1 );
 
   let dispatch = useDispatch();
@@ -26,7 +26,8 @@ function DetailPage ( props ) {
   // }, [input])
 
   useEffect( ()=>{
-    setTimeout(setFade('end'), 100);
+    setTimeout( ()=> setFade('end'), 100);
+    setTimeout( ()=> setAlert(false), 2000);
 
     return( ()=>{
       setFade('');
@@ -35,7 +36,7 @@ function DetailPage ( props ) {
 
   return (
     <div className={'container start ' + fade }>
-      {/* { alert? <div className="alert alert-warning">2초 뒤 숨겨줫!</div> : null } */}
+      { alert? <div className="alert alert-warning">2초 내 구매시 할인</div> : null }
       {/* {count} */}
       {/* <button onClick={ () => { setCount( count ++ )}}>버튼</button> */}
       {
@@ -49,7 +50,7 @@ function DetailPage ( props ) {
             <h4 className="pt-5">{shoesItem.title}</h4>
             <p>{shoesItem.content}</p>
             <p>{shoesItem.price}원</p>
-            <button className="btn btn-danger" onClick={ ()=>{ dispatch( addItem(shoesItem) )}}>주문하기</button> 
+            <button className="btn btn-danger" onClick={ ()=>{ dispatch( addItem({id: shoesItem.id, name: shoesItem.title, count: 1}) )}}>주문하기</button> 
           </div>
           </div>
         ):null}

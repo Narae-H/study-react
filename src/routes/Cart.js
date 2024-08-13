@@ -1,6 +1,6 @@
 import Table from 'react-bootstrap/Table';
 import { useDispatch, useSelector } from 'react-redux';
-import { changeStocks, incCountBy1, setCartItems } from '../store';
+import { changeStocks, decCountBy1, incCountBy1, setCartItems } from '../store';
 import { changeName, incAgeBy1, incAge } from './../store/userSlice'
 
 function Cart() {
@@ -31,8 +31,6 @@ function Cart() {
             return 0  
           })
           dispatch( setCartItems(copiedCartItems) )
-          // console.log( "cart.js")
-          console.log(state.cartItems)
 
         }}>상품명 순 정렬</button>
       </div>
@@ -52,7 +50,10 @@ function Cart() {
                 <td>{i+1}</td>
                 <td>{item.name}</td>
                 <td>{item.count}</td>
-                <td><button onClick={ ()=> dispatch(incCountBy1(item.id)) }>+</button></td>
+                <td>
+                  <button onClick={ ()=> dispatch(incCountBy1(item.id)) }>+</button>
+                  <button onClick={ ()=> dispatch(decCountBy1(item.id)) }>-</button>
+                </td>
               </tr>
             )
           }
