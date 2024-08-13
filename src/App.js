@@ -88,6 +88,16 @@ function App() {
 
         } />
 
+        <Route path="/detail" element={
+          <>
+            {
+              shoes.map( (item, i)=>{
+                return <p key={i}><a href={"/detail/" + item.id}>{item.title}</a></p>
+              })
+            }
+          </>
+        }/>
+
         <Route path='/detail/:id' element={ 
           <Context1.Provider value={{stock}}>
             <DetailPage shoes={shoes}/> 

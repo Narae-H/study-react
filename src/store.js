@@ -45,20 +45,31 @@ let cartItems = createSlice({
       })
     },
     addItem (state, action){
-      let newItem = { 
-        id: action.payload.id,
-        name: action.payload.title,
-        count: 0
-       }
-      state.push(newItem);
+      let foundItem = state.find( (item, i)=>{  
+        return item.id == action.payload.id
+      })
+
+      if( foundItem != null ) {
+        foundItem.count++
+      } else {
+        state.push(action.payload);
+      }
     },
     incCountBy1 (state, action) {
-      let foundItem = state.find( (item, i)=>{ return  item.id == action.payload })
-      foundItem.count += 1
+      let foundItem = state.find( (item, i)=> item.id == action.payload )
+      foundItem.count ++
+    },
+    decCountBy1(state, action){
+      let foundItem = state.find( (item, i)=> item.id == action.payload )
+      if(foundItem.count > 0) {
+        foundItem.count--
+      } else {
+        foundItem.count = 0
+      }
     }
   }
 })
-export let { setCartItems, addItem, incCountBy1 } = cartItems.actions
+export let { setCartItems, addItem, incCountBy1, decCountBy1 } = cartItems.actions
 
 export default configureStore({
   reducer: { 

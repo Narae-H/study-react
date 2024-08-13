@@ -283,7 +283,7 @@ function Child2({val}) { // function Child2({val1, val2, val3}) 이렇게 여러
 데이터는 '부모 -> 자식'만 절달 가능. 만약, '부모 -> 자식 -> 증손자' 에게 전달하고 싶다면? -> 부모에서 자식한테 전달하고 자식이 다시 증손자한테 전달하는건 너무나도 귀찮고 자식이 많아지고 depth도 깊어진다면 찾기도 힘듬.     
 그럴때 쓸 수 있는것?     
 1) [Context API (리액트 기본문법)](#context-api)
-2) [Redux등 외부라이브러리](#redux)
+2) [Redux Toolkit등 외부라이브러리](#redux-toolkit)
 
 # Hook
 ###  Hook 이란?
@@ -470,7 +470,7 @@ function App() {
 
 # Context API
 '부모-> 자식'으로 데이터 전송을 쉽게하기 위한 state의 보관함.   
-But, 실전에서 많이 사용하지 않음 => 왜냐면, 성능 이슈가 있고 컴포넌트 재활용이 힘듬 => [Redux](#redux)를 쓰자!
+But, 실전에서 많이 사용하지 않음 => 왜냐면, 성능 이슈가 있고 컴포넌트 재활용이 힘듬 => [Redux Toolkit](#redux-toolkit)를 쓰자!
 > [!Note]
 > <Details>
 > <Summary> 성능 & 컴포넌트 재활용 이슈?</Summary>
@@ -514,7 +514,7 @@ function Children(){
 ```
 
 
-# Redux
+# Redux Toolkit
 모든 components가 props 없이 state 공유 가능. store.js에 모든 state가 저장되어 있음. 
 
 ### 설치 및 셋팅
@@ -532,7 +532,7 @@ export default configureStore({
 }) 
 ```
 
-3. index.js에 가서 redux 쓰겠다고 선언해주기 
+3. index.js에 가서 redux toolkit 쓰겠다고 선언해주기 
  - store.js에서 썼던 configureStore import 
  - <Provider store={store}></Provider>로 감싸기
 ```JavaScript
@@ -835,7 +835,7 @@ console.log( err2 ); // ['adieu', 'café', 'communiqué', 'éclair', 'premier', 
 
 ### find()
 array/object에서 특정 자료 찾음
-**obj.find(** ([element], [index], [array]) => {} **)**
+**obj.find(** ([element], [index], [array]) => { return [조건] } **)**
 ```JavaScript
 const inventory = [
   { name: "apples", quantity: 2 },
@@ -843,8 +843,22 @@ const inventory = [
   { name: "cherries", quantity: 5 },
 ];
 
-let foundCherries = inventory.find( (ele, index)=>{ ele.name === "cherries" });
+let foundCherries = inventory.find( (ele, index)=>{ return ele.name === "cherries" });
 
 console.log( foundCherries ); // { name: 'cherries', quantity: 5 }
 ```
 
+### findIndex()
+array/object에서 특정 자료를 찾아서 몇번째인지 리턴해줌
+**obj.findIndex(**([element])=>{ if([조건문]){ return [조건]} } **)**
+```JavaScript
+const inventory = [
+  { name: "apples", quantity: 2 },
+  { name: "bananas", quantity: 0 },
+  { name: "cherries", quantity: 5 },
+];
+
+let foundIndex = inventory.findIndex( (ele)=>{ return ele.name === "cherries" });
+
+console.log( inventory[foundIndex] ); // { name: 'cherries', quantity: 5 }
+```
