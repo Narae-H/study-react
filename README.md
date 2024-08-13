@@ -402,10 +402,172 @@ function App() {
 
 
 # Import/Export
+### 특징/유의점
+- 변수, 함수, 자료형 전부 export 가능.
+- 파일마다 export default 라는 키워드는 한번만 사용가능.
+- 파일경로는 ./부터 시작(현재경로라는 뜻임).
 
-# Route
+### 사용법
+- 데이터 1개 내보낼 때
+export default / import
+```Javascript
+(data.js)
+let a = 10;
+export default a;          // 내보내고 싶을 땐: export default [변수명]
 
-# UseNavigate
+(app.js)
+import a from './data.js'; // 가져다 쓰고 싶을 땐: import [변수명] from [파일위치]
+console.log(a)
+```
+
+- 데이터 여러개 내보낼 때
+export {} / import {}
+```JavaScript
+(data.js)
+let a = 20;
+let b = 'Kim';
+export {a, b};          // 내보내고 싶을 땐: export [변수명]
+
+(app.js)
+import {a, b} from './data.js'; // 가져다 쓰고 싶을 땐: import [변수명] from [파일위치]
+console.log(a)
+```
+
+
+# Route / Link
+페이지를 나눌 때, 일반 HTML은 여러개의 HTML 파일을 만들어서 사용. 하지만, React는 Single Page Application이므로 index.html 하나의 페이지 밖에 없음.   
+=> 따라서, 리액트에서는 누가 다른 페이지 요청하면 그냥 내부의 `<div></div>`를 갈아치움. 직접 다 하긴 귀찮으니 **react-router-dom**라이브러리 이용
+
+### react-router-dom 설치/셋팅 방법
+1. 설치
+```
+npm install react-router-dom@6
+```
+2. 셋팅
+import해오고, `<App/>`을 `<BrowserRouter>`로 감싸면 끝
+```JavaScript
+(index.js)
+import { BrowserRouter } from "react-router-dom";
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+  </React.StrictMode>
+); 
+```
+
+### 사용법
+1. 일반 경로   
+Step 1. import해오고   
+Step 2. `<Routes></Routes>` 를 만들고 그 안에 
+Step 3. `<Route/>` 작성: `<Route path="/경로" element={보여줄 HTML} />` https://URL/***경로***로 접속했을 때, **보여줄HTML**로 갈아치워라.
+
+```JavaScript
+(App.js)
+// 1. import
+import { Routes, Route } from 'react-router-dom'
+
+function App(){
+  return (
+    (생략)
+    <Routes>
+      // --- 일반경로
+      <Route path="/" element={ <div>메인페이지</div> } /> 
+      <Route path="/detail" element={ <div>상세페이지임</div> } />
+      <Route path="/about" element={ <div>어바웃페이지임</div> } />
+      
+      // --- 404: 위로 경로말고 다른 URL로 접속시
+      <Route path='*' element={<div>404 Error</div>}/>
+    </Routes>
+  )
+}
+```
+> [!NOTE] 
+> <details>
+> <summary> 이렇게 element에 다 때려넣으면, 코드가 너무 길어지니깐 element안에 넣을 내용을 따로 분리해서 만들자! => 프로젝트 폴더 구조 </summary>
+>
+> 거의 대부분의 파일은 .js 파일임 => 비슷한 .js끼리 한 폴더에 넣기
+> - src/components: 컴포넌트 역할하는 .js파일들
+> - src/routes    : 페이지 역할을 하는 .js 파일들
+> - src/utils     : 자주쓰는 .js 파일들 
+> - src/img       : 이미지 파일들
+> </details>
+
+2. 중첩된 경로(nested routes)   
+/about/member, /about/location 처럼 /about 아래에 하위 경로 만들고 싶을 때는 `<Route>`안에 `<Route>` 넣기.   
+Step 1. 필요한 라이브러리 import하고
+Step 2. `<Route>`안에 `<Route>` 넣는데, 하위 route의 path는 "/"로 시작 안함
+Step 3. `<Outlet>`을 이용하여 about 페이지 어느 부분에 /member, /location 보여줄지 결정
+```JavaScript
+(App.js)
+// 1. import
+import { Routes, Route, Outlet } from 'react-router-dom'
+
+function App(){
+  return (
+    (생략)
+    <Routes>
+      <Route path='/about' element={ <About/> }>
+        <Route path='member' element={<div>Memeber</div>}/>
+        <Route path='location' element={<div>Location</div>}/>
+      </Route>
+    </Routes>
+  )
+}
+
+function About() {
+  return (
+    <div>
+      <h4>about페이지임</h4>
+      <Outlet></Outlet> // 하위 route가 보여질 자리
+    </div>
+  )
+}
+```
+
+### `<Link/>` 페이지 이동 버튼
+JavaScript의 `<a href=""></a>`와 동일    
+Step 1. Link import 해오고   
+Step 2. `<Link to="[경로]">[메뉴이름]</Link>` 넣기   
+```JavaScript
+(App.js)
+import { Link } from 'react-router-dom';
+function App() {
+  [생략]
+
+  return (
+    <Link to="/">홈</Link>
+    <Link to="/detail">상세페이지</Link>
+  )
+}
+
+```
+> [!NOTE] 
+> <details>
+> <summary>근데 `<Link>` 좀 못생김. 그럼, useNavigate() 라이브러리를 쓰자</summary>
+>
+> useNavigate()는 기존 HTML태그&스타일에 함수만 바인딩 하는거니깐 기존 스타일 유지가능.   
+> 페이지 앞/뒤로도 이동가능
+> ```JavaScript
+> (app.js)
+> import { useNavigate } from 'react-router-dom';
+> function App(){
+>   let navigate = useNavigate()
+>   
+>   return (
+>     (생략)
+>     <button onClick={()=>{ navigate('/') }}>홈</button>
+>     <button onClick={()=>{ navigate('/detail') }}>이동버튼</button>
+>     <button onClick={()=>{ navigate(1) }}>앞으로 이동</button>
+>     <button onClick={()=>{ navigate(-1) }}>뒤로 이동</button>
+>   )
+> }
+> ```
+> 
+> </details>
 
 # Lifecycle을 제어함수: useEffect()
 ### Lifecycle이란?
@@ -793,8 +955,37 @@ export default user
 4) 필요한 곳에서 사용
 
 
+# LocalStorage 
+브라우저 안에 있는 저장소
 
+### 위치
+Chrome 개발자 모드(F12) > Application 탭 > Local Storage
 
+### 특징
+1. key:value 형태로 저장가능   
+2. 최대 5MB까지 문자/JSON만 저장가능 (숫자를 저장해도 문자로 변환해서 저장 됨)   
+3. 유저가 캐시를 지우지 않는 한, 사이트 재접속해도 남아있음    
+[!NOTE] Local Storage는 재접속해도 남아있지만, Session Storage는 브라우저 끄면 날라감.
+
+### 사용법
+1. 일반 문자인 경우
+```JavaScript
+localStorage.setItem('age', '20')
+localStorage.getItem('age')
+localStorage.removeItem('age')
+```
+
+2. array/object 인 경우   
+local storage는 문자 또는 JSON만 저장 가능하므로, JSON 타입으로 변형필요
+```JavaScript
+let obj = {name : 'kim'}
+
+// 넣을때: JSON.stringify() 이용해서 '객체 -> 문자'로 변경
+localStorage.setItem('data', JSON.stringify(obj)); 
+
+// 꺼낼때: JSON.parse() 이용해서 '문자 -> JSON'으로 변경
+console.log( JSON.parse( localStorage.getItem('data') ) )
+```
 
 
 
@@ -846,15 +1037,11 @@ testObj.map( (item, index)=>{
 > let arr = [1, 2, 3];
 > // 1. 리턴값 비교
 > // 1-1) forEach()
-> let f = arr.forEach( (val) =>{
->   return val+1;
-> })
+> let f = arr.forEach( (val) => val+1 )
 > console.log(f); // undefined
 >
 > // 1-2) map()
-> let m = arr.map( (val)=> {
->   return val+1; 
-> })
+> let m = arr.map( (val)=> val+1 )
 > console.log(m) //[2, 3, 4]
 >
 > 
@@ -865,7 +1052,7 @@ testObj.map( (item, index)=>{
 > console.log(newArr1) // [2, 4, 6]
 >
 > // 2-2) map()
-> let newArr2 = arr.map( (val)=>{ val*2 })
+> let newArr2 = arr.map( (val)=> val*2 )
 > console.log(newArr2); // [2, 4, 6]
 > ```
 > </details>
@@ -933,4 +1120,23 @@ const inventory = [
 let foundIndex = inventory.findIndex( (ele)=>{ return ele.name === "cherries" });
 
 console.log( inventory[foundIndex] ); // { name: 'cherries', quantity: 5 }
+```
+
+### Array 
+1. 함수
+- arr.push([추가 데이터]): 배열 끝에 추가
+- arr.pop(): 가장 마지막 요소 제거
+- arr.unshift(): 배열의 첫 번째 자리에 새로운 요소 추가
+- arr.shift(): 배열의 첫 번째 요소를 제거
+- app.splice([인덱스], [몇개자를건지])
+- app.slice([시작인덱스], [끝인덱스])  // 시작인덱스부터 끝인덱스 전까지 추출
+
+2. 배열 중복 제거   
+- Set이용
+```JavaScript
+const dupArr    = [1, 2, 3, 1, 2];
+const set       = new Set(dupArr);
+const uniqueArr = [...set];
+
+console.log(uniqueArr) // 결과: [1, 2 ,3]
 ```
