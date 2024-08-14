@@ -1,6 +1,6 @@
 import { createContext, useState } from 'react';
 import './App.css';
-import { Container, Nav, Navbar, Row, Col, Card } from 'react-bootstrap';
+import { Container, Nav, Navbar, Row, Col, Card, ListGroup } from 'react-bootstrap';
 import { Routes, Route, useNavigate, Outlet, Link} from 'react-router-dom';
 import axios from 'axios';
 
@@ -17,6 +17,8 @@ function App() {
   let [moreCnt, setMoreCnt] = useState(2);
   let [loading, setLoading] = useState(false);
   let navigate = useNavigate();
+
+  let watchedItem = JSON.parse(localStorage.getItem('watched'));
   
   return (
     <div className="App">
@@ -34,6 +36,22 @@ function App() {
       <Routes>
         <Route path='/' element={
           <>
+            <div>
+              <ListGroup className='watched-list'>
+            { 
+              watchedItem.reverse().map( (item, i) => {
+              return (
+                <ListGroup.Item action variant="dark" key={i}>
+                  <div className='img-wrapper' onClick={ ()=> navigate("/detail/"+item)}>
+                    <img src={"https://codingapple1.github.io/shop/shoes" + (item+1) + ".jpg"}/>
+                  </div>
+                </ListGroup.Item>
+                )
+              })
+            }
+              </ListGroup>
+            </div>
+
             <div className='main-bg'></div>
       
             <button onClick={() => {
@@ -144,19 +162,6 @@ function NaCard( props ) {
   return (
     <Col md={4}>
       <Card onClick={()=> {
-          // 1. Add watched items in the local storage
-          let watched    = localStorage.getItem('watched');
-          let watchedArr = (watched != null)? JSON.parse(localStorage.getItem('watched')):[];
-
-          let index = watchedArr.findIndex( (item) => item == props.item.id );
-          if( index >= 0 ){ watchedArr.splice(index, 1) }
-          
-          watchedArr.push(props.item.id);
-
-          localStorage.removeItem('watched');
-          localStorage.setItem('watched', JSON.stringify(watchedArr));
-
-          // 2. Move to the following link
           navigate("/detail/"+props.item.id);
         }}>
         <Card.Img variant="top" src={"https://codingapple1.github.io/shop/shoes" + (props.item.id + 1) + ".jpg"} />
