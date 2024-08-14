@@ -26,6 +26,16 @@ function DetailPage ( props ) {
   // }, [input])
 
   useEffect( ()=>{
+    // 1. Add watched items in the local storage
+    let watched    = localStorage.getItem('watched');
+    let watchedArr = (watched != null)? JSON.parse(localStorage.getItem('watched')):[];
+
+    let index = watchedArr.findIndex( (item) => item == shoesItem.id );
+    if( index >= 0 ){ watchedArr.splice(index, 1) }
+    
+    watchedArr.push(shoesItem.id);
+    localStorage.setItem('watched', JSON.stringify(watchedArr));
+
     setTimeout( ()=> setFade('end'), 100);
     setTimeout( ()=> setAlert(false), 2000);
 
@@ -40,8 +50,7 @@ function DetailPage ( props ) {
       {/* {count} */}
       {/* <button onClick={ () => { setCount( count ++ )}}>버튼</button> */}
       {
-        (id >= 0 && id <= props.shoes.length) ? 
-        (<div className="row">
+        <div className="row">
           <div className="col-md-6">
             <img src={"https://codingapple1.github.io/shop/shoes" + (shoesItem.id+1) + ".jpg"} width="100%" alt="detailedImage"/>
           </div>
@@ -52,8 +61,8 @@ function DetailPage ( props ) {
             <p>{shoesItem.price}원</p>
             <button className="btn btn-danger" onClick={ ()=>{ dispatch( addItem({id: shoesItem.id, name: shoesItem.title, count: 1}) )}}>주문하기</button> 
           </div>
-          </div>
-        ):null}
+        </div>
+      }
         <Tabs 
           activeKey={ tab }
           onSelect={ (tab)=>{ setTab(tab)} }

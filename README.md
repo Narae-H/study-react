@@ -987,6 +987,11 @@ localStorage.setItem('data', JSON.stringify(obj));
 console.log( JSON.parse( localStorage.getItem('data') ) )
 ```
 
+### 외부 라이브러리
+- redux-persist
+- Jotai
+- Zustand
+
 
 
 

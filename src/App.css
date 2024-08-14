@@ -29,6 +29,18 @@
   text-align: center;
 }
 
+.watched-list {
+  float:right;
+  width: 8vw;
+  margin: 1vw 1vw 0 0;
+}
+.img-wrapper {
+  width:100%;
+}
+.img-wrapper img {
+  width:inherit;
+}
+
 /* .na-nav-link {
   display: block;
   padding-right: var(--bs-navbar-nav-link-padding-x);
