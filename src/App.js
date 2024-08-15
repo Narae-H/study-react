@@ -8,6 +8,7 @@ import data from './data.js';
 import DetailPage from './routes/Detail.js';
 import Cart from './routes/Cart.js';
 import Spinner from './img/spinner.gif'
+import { useQuery } from 'react-query';
 
 export let Context1 = createContext()
 
@@ -18,7 +19,12 @@ function App() {
   let [loading, setLoading] = useState(false);
   let navigate = useNavigate();
 
+  // 1. 유저가 본 상품 리스트
   let watchedItem = JSON.parse(localStorage.getItem('watched'));
+  watchedItem = (watchedItem == null)? [] : watchedItem;
+
+  // 2. 유저 정보
+  let res = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json').then( (a) => a.data ) );
   
   return (
     <div className="App">
@@ -29,6 +35,11 @@ function App() {
             <Nav.Link onClick={() => { navigate("/")}}>Home</Nav.Link>
             <Nav.Link onClick={() => { navigate("/detail")}}>Detail</Nav.Link>
             <Nav.Link onClick={() => { navigate("/cart")}}>Cart</Nav.Link>
+          </Nav>
+          <Nav className='ms-auto userInfo'>
+            { res.isLoading && '로딩중'}
+            { res.isError && '에러남'}
+            { res.isSuccess && res.data && res.data.name }
           </Nav>
         </Container>
       </Navbar>

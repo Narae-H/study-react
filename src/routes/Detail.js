@@ -5,6 +5,8 @@ import { useParams } from "react-router-dom";
 import { Context1 } from './../App.js'
 import { useDispatch } from "react-redux";
 import { addItem } from "../store.js";
+import { useQuery } from "react-query";
+import axios from "axios";
 
 function DetailPage ( props ) {
   let {id} = useParams();
@@ -24,6 +26,29 @@ function DetailPage ( props ) {
   //   return () => {
   //   }
   // }, [input])
+
+
+
+
+  
+  // ---------------------------------App.js 에는 data라는 value가 존재해서 여기서 테스트 중 ----------------------//
+  let name = "userName";
+  const res = useQuery(
+    ['userInfo', {name}],
+    () => axios.get('https://codingapple1.github.io/userdata.json').then( (a) => {console.log(name); name = ""; return a.data} ),
+    {
+      enabled: !!name // name 존재하지 않는다면 refetch막음. 
+    }
+  );
+  
+  // let res = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json').then( (a) => a.data ));
+  // let {data, isLoading, isError} = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json').then( (a) => a.data ));
+  // console.log(data);
+  // console.log(isLoading);
+  // console.log(isError);
+  // ---------------------------------App.js 에는 data라는 value가 존재해서 여기서 테스트 중 ----------------------//
+  
+
 
   useEffect( ()=>{
     // 1. Add watched items in the local storage

@@ -1,3 +1,5 @@
+해당 내용은 코딩애플:apple: 수업을 듣고 정리한 글입니다.
+
 # React 란? :camera_flash:
 Single Page Application으로 새로고침 없이 부드럽게 이동 가능한데 그 이유는
 - html 파일을 1개만 쓰고
@@ -20,6 +22,31 @@ npx create-react-app [프로젝트명]
 8. Terminal > New Terminal
 9. 터미널에 **npm start** 입력(내 사이트를 브라우저로 미리보기 띄우기)
 
+> [!NOTE]
+> <details>
+> <summary>리액트 라이브러리 설치/삭제</summary>
+> 
+> - 기본패턴
+> ```
+> npm install [라이브러리 이름]
+> ```
+> 
+> - 특정 버전 설치
+> ```
+> npm install [라이브러리 이름]@[버전번호]
+> ```
+>
+> - 라이브러리 삭제
+> ```
+> npm uninstall [라이브러리 이름]
+> ```
+>
+> - 설치된 라이브러리 확인
+> package.json의 "dependencies"에서 확인 가능
+>
+> </details>
+
+   
 > [!NOTE]
 > <details>
 > <summary> 참고: JSX</summary>
@@ -795,7 +822,7 @@ root.render(
 Action들을 모아 놓는 곳?. state를 변경하기 위해서 사용
 
 - payload 
-화물, 소포. 파라미터 받아올 때.
+화물, 소포라는 뜻으로 dispatch()에서 파라미터(화물) 받아올 때씀.
 
 ### 사용법
 1. Redux store에 state 보관법
@@ -992,6 +1019,178 @@ console.log( JSON.parse( localStorage.getItem('data') ) )
 - Jotai
 - Zustand
 
+
+# react-query
+병렬쿼리(Parallel Queries), 종속쿼리 등을 이용하여 실시간 데이터를 주고 받기 쉬움. useQuery()는 비동기로 동작하므로 여러개 비동기 query가 있다면 userQueries() 사용하면 좋음. 또는 useQuery()에서 enabled를 사용하면 동기적으로 사용가능.   
+실시간 데이터를 지속적으로 가져와야 하는 사이트(SNS, 코인거래소) 등에서 쓰면 좋음. 그 외 사이트는 안써도 상관없음.
+
+### 설치 및 셋팅
+1. 설치
+```
+npm install react-query@3
+```
+
+2. 셋팅   
+Step 1. 필요한 컴포넌트 불러오기   
+Step 2. queryClient 생성   
+Step 3. `<QueryClientProvider client={queryClient}>`로 <App/> 감싸기   
+```JavaScript
+(index.js)
+// 1. Import
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+// 2. queryClient  생성
+const queryClient =  new QueryClient(); 
+
+[생략]
+
+root.render(
+  // 3. <App/>를 <QueryClientProvider client={queryClient}>로 감싸기
+  <QueryClientProvider client={queryClient}>
+    <Provider store={store}>
+      <React.StrictMode>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </React.StrictMode>
+    </Provider>
+  </QueryClientProvider>
+);
+
+```
+
+3. 사용방법   
+ajax요청 할 때 react-query를 써서 요청하면 더 편리함.   
+Step 1. useQuery 가져오기   
+Step 2. useQuery()사용, 쿼리키는 단순하게 문자열도 되고 배열 형태로도 사용 가능.   
+ - 사용법1: **const res = useQuery(**[쿼리키], [쿼리함수]**)**
+ - 사용법2: **const res = useQuery({queryKey:** [쿼리키], **queryFn:** [쿼리함수] **})**
+
+[!NOTE] queryKey를 통해 고유한 값을 부여함으로써 react-query가 query캐싱 관리를 할 수 있도록 해준다.
+
+```JavaScript
+import { useQuery } from 'react-query';
+
+function App() {
+  // 함수들(axios(), useQuery() 에서 return 해줘야 result1 변수에 값 담는 것 가능.
+  // 사용법 1. return 다 표기한 경우
+  let result1 = useQuery('userInfo', ()=> {return axios.get('https://codingapple1.github.io/userdata.json').then( (a) => {return a.data} ) })  
+
+  // 사용법 2. {return } 생략한 경우
+  let result2 = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json').then( (a) => a.data ) )  
+  
+  // 사용법 3. then()생략한 경우. => result3변수에서 데이터 접근 방법만 달라질 뿐 값 가져오는건 문제 없음.
+  let result3 = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json') )  
+  
+  return (
+    [생략]
+  )
+}
+```
+
+4. Result format   
+ajax요청을 변수하나로 쉽게 상태(성공/실패/로딩중)가능   
+ - result.data: ajax요청이 성공했을 때 가져오는 데이터   
+ - result.isLoading: ajax가 요청중일 때 'true'   
+ - result.isError: ajax요청이 실패했을 때 'true'   
+ - result.isSuccess: ajax요청이 실패했을 때 'true'   
+```JavaScript
+function App() {
+  let res = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json').then( (a) => a.data ) );
+
+  return (
+    <div className='ms-auto userInfo'>
+      { res.isLoading && '로딩중'}
+      { res.isError && '에러남'}
+      { res.isSuccess && res.data.name }
+    </div>
+  )
+}
+``` 
+
+5. query key   
+여러 곳에서 user Info를 쓰고 싶어서 전부 다 useQuery([쿼리키], axios.get())를 쓴다면 요청을 반복적으로 여러번해서 비효율적일까?      
+ => 결론은 NO! react-query는 쿼리키가 같다면 한번만 요청함. 때문에, state, props 전송하지 않고 중복해서 사용해도 됨. 
+```JavaScript
+function App() {
+  // 1. 키 값 비교
+  // 예시1: 키값 같음, 쿼리함수 같음) 같은 키값을 가지므로 한개의 요청만 이루어 지고, res2는 그대로 res1의 결과값을 가져와서 사용.  
+  const res1 = useQuery('userInfo', [쿼리함수1]);
+  const res2 = useQuery('userInfo', [쿼리함수1]);
+
+  // 예시2: 키값 다름, 쿼리함수 같음) 같은 쿼리함수 이지만 다른 키 값을 가지므로 두개의 요청을 함.  
+  const res3 = useQuery('userInfo3', [쿼리함수3]);
+  const res4 = useQuery('userInfo4', [쿼리함수3]);
+
+  // 예시3: 키값 같음, 쿼리함수 다름) 다른 쿼리함수 이지만 같은 키 값을 가지므로 한개의 요청만 이루어지고, res6은 res5의 결과값을 가져와서 사용.  
+  const res5 = useQuery('userInfo5', [쿼리함수5]);
+  const res6 = useQuery('userInfo5', [쿼리함수6]);
+}
+```
+
+6. 자주 쓰이는 query options   
+1) staleTime: number | Infinity (default: 0)
+ - userQuery()로 ajax 감싸면, 틈만나면 자동으로 재요청(refetch)해줌.
+ - refetch가 발생되는 이유는 queryKey에 매핑되는 데이터가 "fresh" 하지 않고 "stale" 해졌다고 생각하기 때문.
+ - staleTime을 이용하여 'fresh 데이터니 refetch하지 말아라' 라고 설정 할 수 있다.
+```JavaScript
+function App(
+  // staleTime 값이 0인 경우, 한 번 데이터를 조회해오면, 그 데이터는 바로 stale 하다고 생각하고 refetch.
+  // 예를 들어, staleTime을 2000ms 라고 설정하면 2초 동안은 fresh한 데이터라고 여김.
+  let res1 = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json'), {staleTime: 2000} )
+)
+```
+
+2) retry: boolean | number | (failureCount: number, error: TError) => boolean (default: 3)
+쿼리 요청 실패시 알아서 retry 해줌. true 설정 시 무한 재시도하고, false 설정 시 재시도 하지 않음. 
+```JavaScript
+function App(
+  // staleTime 값이 0인 경우, 한 번 데이터를 조회해오면, 그 데이터는 바로 stale 하다고 생각하고 refetch.
+  // 예를 들어, staleTime을 2000ms 라고 설정하면 2초 동안은 fresh한 데이터라고 여김.
+  let res1 = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json'), {retry: 10} )
+)
+```
+
+3) refetchOnWindowFocus: boolean | "always" (default: always)
+ - 다른 곳(다른 브라우저, 다른 실행프로그램 등등)에 갔다가 페이지 내부를 클릭하는 경우, refetch 일어남.
+```JavaScript
+function App(
+  // 페이지를 활성화 할 때마다 실행.(예를 들어, 바탕화면을 클릭했다가 해당 페이지를 다시 클릭하면 refetch 실행)
+  // false로 설정하면, 페이지가 다시 활성화되도 refetch 안일어남.
+  let res2 = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json'), {refetchOnWindowFocus: false} )
+)
+```
+
+4) cacheTime: number | Infinity (default: 5 * 60 * 1000ms )
+ - 캐싱기능으로 인해 더 빠르게 느껴짐.(5분 동안은 결과값 기억)
+ - 만약, 11시 11분에 요청한번 하고 11시 14분에 한번 더 요청한다면? => 캐싱된 값을 먼저 보여주고, 그 다음에 GET요청을 함(더 빠름)
+```JavaScript
+function App() {
+  let res1 = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json'), {cacheTime: infinity});
+}
+```
+
+5) enabled: boolean (default: true)
+ - query 실행 조건을 설정하여 조건문 없이도 데이터 요청 제어 가능   
+```JavaScript
+const res = useQuery(
+    ['userInfo', id],
+    () => axios.get('https://codingapple1.github.io/userdata.json'),
+    {
+      enabled: !!id // id가 존재하지 않는다면 refetch막음. 
+    });
+```
+
+!!!!!!!!!!!!!!!!!!!! 이 부분 수정필요 id가 어디서 불러오는거고 어떻게 업데이트해서 enabled를 컨트롤할 지 아직 잘 모르겠음. 
+
+
+> [!NOTE]
+> <details>
+> <summary>PTK Query도 유사한 기능 제공</summary>
+> 
+> redux-toolkit 설치하면 RTK Query도 자동으로 설치됨.
+> 근데, 문법이 좀 더러워서 react-query가 더 쉬움.
+> </details>
 
 
 
