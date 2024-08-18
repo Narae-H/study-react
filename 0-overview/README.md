@@ -1074,14 +1074,20 @@ import { useQuery } from 'react-query';
 function App() {
   // 함수들(axios(), useQuery() 에서 return 해줘야 result1 변수에 값 담는 것 가능.
   // 사용법 1. return 다 표기한 경우
-  let result1 = useQuery('userInfo', ()=> {return axios.get('https://codingapple1.github.io/userdata.json').then( (a) => {return a.data} ) })  
+  let res1 = useQuery('userInfo', ()=> {return axios.get('https://codingapple1.github.io/userdata.json').then( (a) => {return a.data} ) });  
 
   // 사용법 2. {return } 생략한 경우
-  let result2 = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json').then( (a) => a.data ) )  
+  let res2 = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json').then( (a) => a.data ) );  
   
   // 사용법 3. then()생략한 경우. => result3변수에서 데이터 접근 방법만 달라질 뿐 값 가져오는건 문제 없음.
-  let result3 = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json') )  
+  let res3 = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json') );  
   
+  // 사용법 4. destructuring 문법으로 결과값 할당
+  let {data, isLoading, isError} = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json') ); 
+
+  // 사용법 5. destructuring 문법으로 결과값 할당, data라는 변수는 너무 많이 쓰이므로 data 받아온걸 다른 이름(shoeData)으로 변경
+  let {data: shoeData, isLoading, isError} = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json') ); 
+
   return (
     [생략]
   )
@@ -1109,8 +1115,13 @@ function App() {
 ``` 
 
 5. query key   
-여러 곳에서 user Info를 쓰고 싶어서 전부 다 useQuery([쿼리키], axios.get())를 쓴다면 요청을 반복적으로 여러번해서 비효율적일까?      
+- 여러 곳에서 user Info를 쓰고 싶어서 전부 다 useQuery([쿼리키], axios.get())를 쓴다면 서버에 반복적으로 요청하게되어 비효율적일까?      
  => 결론은 NO! react-query는 쿼리키가 같다면 한번만 요청함. 때문에, state, props 전송하지 않고 중복해서 사용해도 됨. 
+- 쿼리키는 배열[] 형태이며, 원소로는 String, Object 둘 다 가능. 배열 원소들의 순서가 다르면 다른 키로 인식. but, 객체 안에서는 값만 같다면 순서는 상관없음    
+  예시 1) ['a', 'b'] 는 ['b', 'a'] 동일한 키인가? => NO!   
+  예시 2) ['a', {status: 'completed', page: 1}]와 ['a', {page: 1, status: 'completed'}] 는 같은 키인가? => YES!    
+  예시 3) ['a', {status: 'completed', page: 2}]와 ['a', {page: 1, status: 'completed'}] 는 같은 키인가? => NO!       
+
 ```JavaScript
 function App() {
   // 1. 키 값 비교
@@ -1128,7 +1139,19 @@ function App() {
 }
 ```
 
-6. 자주 쓰이는 query options   
+6. 파라미터 전달
+- 쿼리함수에서 파라미터를 전달하고 싶다면?
+```JavaScript
+function App() {
+  let {data} = useQuery(
+      ['userInfo', userIds],
+      ()=> queryFun1(userIds)
+  )
+}
+
+```
+
+7. 자주 쓰이는 query options   
 1) staleTime: number | Infinity (default: 0)
  - userQuery()로 ajax 감싸면, 틈만나면 자동으로 재요청(refetch)해줌.
  - refetch가 발생되는 이유는 queryKey에 매핑되는 데이터가 "fresh" 하지 않고 "stale" 해졌다고 생각하기 때문.
@@ -1172,15 +1195,24 @@ function App() {
 
 5) enabled: boolean (default: true)
  - query 실행 조건을 설정하여 조건문 없이도 데이터 요청 제어 가능   
- 참고: https://velog.io/@rgfdds98/React-Query-queryKeys
+ - 비동기 함수인 useQuery()를 동기적으로 사용 가능
 ```JavaScript
-const res = useQuery(
-    ['userInfo', id],
-    () => axios.get('https://codingapple1.github.io/userdata.json'),
-    {
-      enabled: !!id // id가 존재하지 않는다면 refetch막음. 
-    });
-```
+function App() {
+
+  // 1. 데이터 요청제어
+  const { data: userInfo } = useQuery('userInfo',() => axios.get('https://codingapple1.github.io/userdata.json'));
+
+
+  // 2. 동기적으로 실행: 위의 문장에서 userInfo가 empty가 아니여야지만 아래 문장 실행가능하므로 동기적으로 실행
+  const { data: userInfo } = useQuery('userInfo',() => axios.get('https://codingapple1.github.io/userdata.json'));
+
+  const { data: userImg, isError } = useQuery(
+      'userImg',
+      () => axios.get('https://codingapple1.github.io/userImage'),
+      {
+        enabled: !!userInfo // userInfo 존재하지 않는다면 실행막음. 
+      });
+}
 
 !!!!!!!!!!!!!!!!!!!! 이 부분 수정필요 id가 어디서 불러오는거고 어떻게 업데이트해서 enabled를 컨트롤할 지 아직 잘 모르겠음. 
 
