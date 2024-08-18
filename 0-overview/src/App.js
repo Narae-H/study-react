@@ -16,7 +16,7 @@ const Cart       = lazy(() => import('./routes/Cart.js'));
 
 export let Context1 = createContext()
 
-function App() {
+function App() { 
   let [shoes, setShoes]  = useState(data);
   let [stock, setStock]  = useState([10, 11, 12]); // Context API로 전달해보자
   let [moreCnt, setMoreCnt] = useState(2);
