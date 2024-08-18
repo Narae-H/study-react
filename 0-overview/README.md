@@ -1213,8 +1213,7 @@ function App() {
         enabled: !!userInfo // userInfo 존재하지 않는다면 실행막음. 
       });
 }
-
-!!!!!!!!!!!!!!!!!!!! 이 부분 수정필요 id가 어디서 불러오는거고 어떻게 업데이트해서 enabled를 컨트롤할 지 아직 잘 모르겠음. 
+```
 
 > [!NOTE]
 > <details>
