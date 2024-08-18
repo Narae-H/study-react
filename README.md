@@ -1172,6 +1172,7 @@ function App() {
 
 5) enabled: boolean (default: true)
  - query 실행 조건을 설정하여 조건문 없이도 데이터 요청 제어 가능   
+ 참고: https://velog.io/@rgfdds98/React-Query-queryKeys
 ```JavaScript
 const res = useQuery(
     ['userInfo', id],
@@ -1183,7 +1184,6 @@ const res = useQuery(
 
 !!!!!!!!!!!!!!!!!!!! 이 부분 수정필요 id가 어디서 불러오는거고 어떻게 업데이트해서 enabled를 컨트롤할 지 아직 잘 모르겠음. 
 
-
 > [!NOTE]
 > <details>
 > <summary>PTK Query도 유사한 기능 제공</summary>
@@ -1191,6 +1191,157 @@ const res = useQuery(
 > redux-toolkit 설치하면 RTK Query도 자동으로 설치됨.
 > 근데, 문법이 좀 더러워서 react-query가 더 쉬움.
 > </details>
+
+
+# React용 유용한개발자도구
+변환된 html, css말고, 컴포넌트 미리 보고 싶거나, props 확인하고 싶을 때
+
+### React용 개발자 도구 설치
+1. React   
+Chrome에서 **Chrome web store** 접속 > **React Developer Tools** 검색 > **Chrome 에 추가** 눌러서 설치 > 크롬재시작 > 설치하고 나면 **Components, Profiler** 탭 생기고 여기서 디버깅 가능
+- Component tab: 특정요소 선택하여 찾기, props 값 확인, 특정 코드가 어느 위치인지 확인
+- Profiler: 성능 저하되는 컴포넌트 찾기 (녹화시작 > 끝 > 어떤 컴포넌트가 시간 소요가 많이 되었는지 확인. 보통은 o.xxxxx ms가 소요. 그 이상 소요된다면 뭔가 문제가 있을지도?)
+
+2. Redux   
+Chrome에서 **Chrome web store** 접속 > **Redux DevTools** 검색 > **Chrome 에 추가** 눌러서 설치 >  크롬재시작 > 설치하고 나면 **Redux** 탭 생기고 여기서 디버깅 가능
+ - store 한 눈에 보여줌. state 변경한 내역 알려줌.
+
+# 성능개선
+### 1. Lazy import
+- React는 Single page application이기 때문에 발행을 하기 위해 npm run build 하고 나면 하나의 html, css, js 파일이 생성됨. 모든 내용이 다 하나의 페이지에 들어가있으므로 React로 만들어진 페이지는 느림.   
+- 메인 페이지에서는 다른 페이지까지 로드 할 필요가 없기 때문에, "다른 페이지는 필요할 때 import 해주세요." 라고 명령가능. 그게 바로, **lazy import**.   
+- 장점: 아래와 같이 lazy(()=>{}) 쓰게되면, 하나의 js파일이 아니라 별도의 js 파일이 생성 되어 로딩 속도 개선할 수 있음.
+- 단점: details 페이지나 cart 페이지 접속하려고 할 때 약간의 지연(로딩시간) 발생, `<Suspense/>` 이용하여 '로딩중...' 문구 띄우는 방법도 고려해 볼 수 있음.
+```JavaScript
+(App.js)
+// 1. import libraries
+import { lazy, Suspense } from 'react'; 
+
+// 2. lazy( ()=>{} )
+const DetailPage = lazy(() => import('./routes/Detail.js'));
+const Cart       = lazy(() => import('./routes/Cart.js')).
+
+function App() {
+  return (
+    // 3. Optional: 로딩중 문구 띄우고 싶다면, 지연이 되는 컴포넌트를 <Suspense/> 로 감싸기. 귀찮으면, <Routes> 부분을 <Suspense/>로 감싸도 상관없음.
+    <Suspense fallback={ <div>로딩중...</div> }>
+      <Detail shoes={shoes} />
+    </Suspense>
+  )
+}
+```
+
+### 2. memo
+- 부모 컴포넌트가 랜더링이 되면 자식 컴포넌트도 항상 재랜더링. 근데 만약 자식 컴포넌트가 속도가 너무 오래걸리는 컴포넌트 라면? => 성능저하 일으킬 수 있음.
+- 필요할 때만 재랜더링 해달라고 코드짜는 것이 **memo**. **let** [변수이름] **= memo (**[callback 함수]**)**.   
+- 장점: 자식으로 전달되는 props가 변할 때만 재랜더링해줌.   
+- 단점: memo()는 실행될 때마다, 기존 props와 신규 props가 같은지 비교 작업을 하고 다르다면 재랜더링 작업을 함. 만약, props가 길고 복잡하다면 비교하는데도 시간 많이 소요될 수 있으므로 오히려 성능저하 일으킬 수 있음.
+```JavaScript
+import { memo } from 'react';
+
+let Child = memo ( function() {
+  console.log("재랜더링 테스트");
+  return(
+    <div>자식임</div>
+  )
+})
+
+function Parent () {
+  return (
+    <>
+      <Child></Child>
+    </>
+  )
+}
+```
+
+### useMemo
+컴포넌트 렌더링시 1회만 실행시켜 줌. 그 이후에는 시행 아예 안됨.
+```JavaScript
+// 1. Import 
+import { useMemo } from 'react';
+
+// 2. 자식 함수 생성
+function testFun() {
+  return(
+    <div>자식임</div>
+  )
+}
+
+function Parent() {
+  // 3. userMemo( ()=>{} ) 샤용
+  // [dependencies]는 optional. dependencies에 따라 실행여부 결정할 수 있음.
+  let result = useMemo(()=>{return testFun()}, [dependencies])
+}
+```
+
+### useTransition
+리액트 18버전부터 추가된 기능으로, 느린 컴포넌트 성능 향상 기능 (카드 빛 돌려막기 느낌). startTransition()안에 있는 코드를 뒤로 늦쳐줌. 실행 시점을 조절하면서 성능항상.
+```JavaScript
+// 1. import
+import {useState, useTransition} from 'react'
+
+let a = new Array(10000).fill(0)
+
+function App(){
+  let [name, setName] = useState('')
+  // 2. 선언
+  // isPending은 startTransition()이 처리중일때 true
+  let [isPending, startTransition] = useTransition()
+  
+  return (
+    <div>
+      <input onChange={ (e)=>{ 
+        // 3. 지연시키기고 싶은 부분을 startTransition()로 감싸기
+        startTransition(()=>{
+          setName(e.target.value) 
+        })
+      }}/>
+
+      {
+        isPending? '로딩중 : 
+        a.map(()=>{
+          return <div>{name}</div>
+        })
+      }
+    </div>
+  )
+}
+```
+
+### useDeferredValue
+startTransition()랑 비슷. 지연시키고 싶은 변수를 넣음.
+```JavaScript
+import {useState, useDeferredValue} from 'react'
+
+let a = new Array(10000).fill(0)
+
+function App(){
+  let [name, setName] = useState('')
+  let state1 = useDeferredValue(name)
+  
+  return (
+    <div>
+      <input onChange={ (e)=>{ 
+          setName(e.target.value) 
+      }}/>
+
+      {
+        a.map(()=>{
+          return <div>{state1}</div>
+        })
+      }
+    </div>
+  )
+}
+```
+
+# PWA 셋팅해서 앱으로 발행 (모바일앱인척)
+- PWA(Progressive Web App)이란, 웹사이트를 앱처럼 사용할 수 있게 해주는 기술. PC일 경우 웹사이트의 바로 가기 아이콘 만들어주고, 모바일일 경우 웹사이트 자체를 홈화면에 설치해줌(앱과 동일하게 상단 주소창 같은것 다 없어짐, 일반 사용자는 앱이랑 구분을 못함).
+- Cache storage때문에 오프라인에서도 동작 가능.
+
+### 설치방법 
+
 
 
 
