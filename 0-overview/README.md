@@ -430,9 +430,42 @@ function App() {
 ``` 
 
 ### Custom hook
+Custom hook으로 코드 재사용하기, 반복적인 부분을 함수로 만들어서 재사용 하는 것.
 
+# 사용법
+```JavaScript
+// 1. 사용하고 싶은 함수 만들기
+(hooks/like.js)
+// 1-1) 함수 앞에 export 붙이고, 함수명은 use()로 시작하기(왜냐면 커스텀 함수 안에 use로 시작하는 hook함수 있으니깐)
+export function useLike(){
+  let [like, setLike] = useState(0);
 
+  function addLike(){
+    setLike(like+1)
+  }
 
+  // 1-2) return 이용해서 내보내줄 변수 또는 함수 적어주기, 여러개 쓸 때는 []를 이용.
+  return [like, addLike];
+}
+
+(Detail.js)
+// 2. import
+import { useLike } from "../hooks/like.js";
+
+function Detail() {
+  // 3. 변수와 함수 받아오기
+  let [like, addLike] = useLike();
+
+  return(
+    <div>
+    // 4. 사용
+      {like}<span onClick={ ()=>{ addLike() }}>❤</span>
+    </div>
+  )
+}
+```
+- 주의점: 함수안에 use로 시작하는 hook함수를 포함하고 있다면, custom 함수도 use로 시작하도록 작명해야함. (안하면 에러남)
+=> hook 함수(use로 시작하는 함수)는 컴포넌트의 함수 안에만 적어야 함. (return() 안에다가 적을 수 없음)
 
 
 # Import/Export
