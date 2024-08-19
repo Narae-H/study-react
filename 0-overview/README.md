@@ -1,4 +1,4 @@
-해당 내용은 코딩애플:apple: 수업을 듣고 정리한 글입니다.
+해당 내용은 코딩애플 🍎 수업을 듣고 정리한 글입니다.
 
 # React 란? :camera_flash:
 Single Page Application으로 새로고침 없이 부드럽게 이동 가능한데 그 이유는
