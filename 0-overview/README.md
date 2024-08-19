@@ -75,6 +75,8 @@ npx create-react-app [프로젝트명]
 ### 문법
 - **기본 사용법**   
 **let[**_state이름, state변경 함수 이름으로 함수로 set[변수명]으로 작명_**]** = **useState(**_'state에 넣을 값'_**);**
+- state변경함수는 전부 asynchronous로 처리되기 때문에 현재의 값이 업데이트 되지 않는 값을 갖게 되면서 예상치 못한 문제가 생길 수도 있음. => 이걸 어떻게 처리하냐? [useEffect()](#lifecycle을-제어함수-useeffect) 를 써서 해결.
+
 ```JavaScript
 (App.js)
 
@@ -390,7 +392,7 @@ Hook은 16.8에서 새롭게 도입된 기능으로 함수형 컴포넌트에서
 내장훅(use로 시작하는 함수)과 custom hooks가 있음 ex) useState(), useEffect()
 
 ### Hook 사용 이유
-컴포너트 간의 계층을 바꾸지 않고 상태 로직을 재사용 할 수 있음.
+컴포넌트 간의 계층을 바꾸지 않고 상태 로직을 재사용 할 수 있음.
 하나의 컴포넌트 생명주기가 아닌 기능을 기반으로 하여 작은 함수 단위로 나눌 수 있음.
 
 ### Hook 규칙/문법
@@ -426,6 +428,11 @@ function App() {
   })
 }
 ``` 
+
+### Custom hook
+
+
+
 
 
 # Import/Export
@@ -648,7 +655,55 @@ function App() {
 
 ```
 
-# Ajax (Asynchronous Javascript And XML)
+### state 변경 함수의 asynchronous로 인한 문제점 해결
+- Senario: 버튼을 누를 때마다
+ 1) count라는 state를 +1 (버튼누른 횟수 기록용)  
+ 2) age라는 state도 +1    
+ 3) count 가 3 이상이면 더 이상 age증가 X   
+=> 예상 시나리오는 (3)번이 제대로 동작할 것 같으나, 실제로는 asynchronous 때문에 count가 3 이상이여도 age가 증가할 수도 있음. setAge()가 setCount()보다 먼저 실행된다면.
+```JavaScript
+function App(){
+  let [count, setCount] = useState(0);
+  let [age, setAge] = useState(20);
+
+  return(
+    <div>
+      <p>{count}</p>
+      <p>{age}</p>
+      <button onClick={()=>{ 
+        setCount(count++); 
+        if(count < 3){ setAge(age++)}  
+      }}>1씩 증가</button>
+    </div>
+  )
+}
+```
+
+-해결방법: useEffect() 사용하여 count가 변경될 때만 age값이 변동하도록 설정.
+```JavaScript
+function App() {
+  let [count, setCount] = useState(0);
+  let [age, setAge] = setState(20);
+
+  useEffect(()=>{
+    setAge(age++);
+  }, [count])
+
+  return(
+    <div>
+      <p>{count}</p>
+      <p>{age}</p>
+      <button onClick={ ()=>{
+        setCount(count++);
+      }}></button>
+    </div>
+  )
+}
+```
+
+
+
+# Ajax (Asynchronous Javascript And XML) 요청
 JavaScript를 통해서 서버에 데이터를 비동기 방식으로 요청
 
 ### 문법
@@ -1367,16 +1422,6 @@ function App(){
 }
 ```
 
-# PWA 셋팅해서 앱으로 발행 (모바일앱인척)
-- PWA(Progressive Web App)이란, 웹사이트를 앱처럼 사용할 수 있게 해주는 기술. PC일 경우 웹사이트의 바로 가기 아이콘 만들어주고, 모바일일 경우 웹사이트 자체를 홈화면에 설치해줌(앱과 동일하게 상단 주소창 같은것 다 없어짐, 일반 사용자는 앱이랑 구분을 못함).
-- Cache storage때문에 오프라인에서도 동작 가능.
-
-### 설치방법 
-
-
-
-
-
 # 유용한 JavaScript 문법
 ### forEach()
 반복문처럼 사용. object/array의 자료 개수만큼 안의 코드 실행
@@ -1526,3 +1571,7 @@ const uniqueArr = [...set];
 
 console.log(uniqueArr) // 결과: [1, 2 ,3]
 ```
+
+# JavaScript: Sync / async 
+- JavaScript는 일반적으로 synchronous(동기) 처리 => 윗부분부터 순서대로 코드가 실행
+- 하지만, 일부 함수들(시간이 오래걸리는애들)은 asynchronous(비동기)로 처리. => 순차적으로 실행되지 않고 완료되면 실행 ex) ajax(), setTimeout()
