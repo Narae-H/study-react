@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { addItem } from "../store.js";
 import { useQuery } from "react-query";
 import axios from "axios";
+import { useLike, useUsername } from "../hooks/like.js";
 
 function DetailPage ( props ) {
   let {id} = useParams();
@@ -17,7 +18,6 @@ function DetailPage ( props ) {
   let [fade, setFade] = useState('');
   let [alert, setAlert] = useState(true);
   let {stock} = useContext( Context1 );
-
   let dispatch = useDispatch();
 
   // useEffect (() => {
@@ -47,19 +47,26 @@ function DetailPage ( props ) {
     })
   },[])
 
+
+  let [like, addLike] = useLike();
+
+  let userName = useUsername();
+  
   return (
     <div className={'container start ' + fade }>
       { alert? <div className="alert alert-warning">2초 내 구매시 할인</div> : null }
       {/* {count} */}
-      {/* <button onClick={ () => { setCount( count ++ )}}>버튼</button> */}
+      {/* <button onClick={ () => { setCount( count +1 )}}>버튼</button> */}
       {
         <div className="row">
+          <div>{userName} 반가움</div>
           <div className="col-md-6">
             <img src={"https://codingapple1.github.io/shop/shoes" + (shoesItem.id+1) + ".jpg"} width="100%" alt="detailedImage"/>
           </div>
           <div className="col-md-6">
+            <h4>{like} <span onClick={()=>{ addLike() }}>❤</span></h4>
             {/* <input onChange={ (e) => { setInput(e.target.value) }}></input> */}
-            <h4 className="pt-5">{shoesItem.title}</h4>
+            <h4 className="pt-5">{shoesItem.title} </h4>
             <p>{shoesItem.content}</p>
             <p>{shoesItem.price}원</p>
             <button className="btn btn-danger" onClick={ ()=>{ dispatch( addItem({id: shoesItem.id, name: shoesItem.title, count: 1}) )}}>주문하기</button> 
