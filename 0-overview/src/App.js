@@ -1,4 +1,4 @@
-import { createContext, lazy, Suspense, useState } from 'react';
+import { createContext, lazy, Suspense, useEffect, useState } from 'react';
 import './App.css';
 import { Container, Nav, Navbar, Row, Col, Card, ListGroup } from 'react-bootstrap';
 import { Routes, Route, useNavigate, Outlet, Link} from 'react-router-dom';
@@ -30,6 +30,16 @@ function App() {
   // 2. 유저 정보
   let {data: userInfo, isLoading, isError, isSuccess} = useQuery('userInfo', ()=> axios.get('https://codingapple1.github.io/userdata.json') );
 
+  // 3. 임시 테스트
+  let [count, setCount] = useState(0);
+  let [age, setAge] = useState(20);
+
+  useEffect( ()=>{
+    if(count > 0 && count < 3){ 
+      setAge(age++)
+    }  
+  }, [count] )
+
   return (
     <div className="App">
       <Navbar bg="dark" data-bs-theme="dark">
@@ -47,6 +57,12 @@ function App() {
           </Nav>
         </Container>
       </Navbar>
+
+      <p>{count}</p>
+      <p>{age}</p>
+      <button onClick={()=>{ 
+        setCount(count++); 
+        }}>1씩 증가</button>
 
       <Suspense fallback={ <div>로딩중임</div>}>
         <Routes>
