@@ -1,5 +1,8 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
-import user from './store/userSlice'
+import  user  from './store/userSlice' 
+// import  { changeName, incAgeBy1, incAge }  from './store/userSlice' 
+
+// import user from './store/userSlice.js'
 
 // let user = createSlice({
 //   name: "user",

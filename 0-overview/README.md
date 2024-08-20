@@ -1,4 +1,4 @@
-해당 내용은 [코딩애플🍎](https://codingapple.com/) 수업을 듣고 정리한 글입니다.
+해당 내용은 [코딩애플🍎](https://codingapple.com/) 수업을 듣고 정리한 글로, React 16.8 버전 이후의 내용을 담고 있습니다. 
 
 # React 란? :camera_flash:
 Single Page Application으로 새로고침 없이 부드럽게 이동 가능한데 그 이유는
@@ -350,8 +350,8 @@ function Modal () {
 자식이 부모의 state 가져다가 쓰고 싶을 때
 
 ### 문법
-Step 1) <자식컴포넌트이름 작명={state이름}>    
-Step 2) 자식컴포넌트에서 props 받아와서 사용
+Step 1. <자식컴포넌트이름 작명={state이름}>    
+Step 2. 자식컴포넌트에서 props 받아와서 사용
 ```JavaScript
 
 function App() {
@@ -430,13 +430,15 @@ function App() {
 ``` 
 
 ### Custom hook
-Custom hook으로 코드 재사용하기, 반복적인 부분을 함수로 만들어서 재사용 하는 것.
+- 반복되는 로직을 함수(Custom hook)로 만들어서 으로 코드 재사용하기.
+- hook을 여러다른 컴포넌트에서 재사용할 때 상태값은 컴포넌트 별로 독립적으로 추가. => 즉, 컴포넌트A 에서 값을 변경해도 컴포넌트B에서 값 변경 안됨. 
 
-# 사용법
+- 사용법
 ```JavaScript
 // 1. 사용하고 싶은 함수 만들기
 (hooks/like.js)
 // 1-1) 함수 앞에 export 붙이고, 함수명은 use()로 시작하기(왜냐면 커스텀 함수 안에 use로 시작하는 hook함수 있으니깐)
+// use로 함수 이름을 시작해야 리액트가 커스텀 훅으로 인식하여 훅 규칙 적용
 export function useLike(){
   let [like, setLike] = useState(0);
 
@@ -467,6 +469,7 @@ function Detail() {
 - 주의점: 함수안에 use로 시작하는 hook함수를 포함하고 있다면, custom 함수도 use로 시작하도록 작명해야함. (안하면 에러남)
 => hook 함수(use로 시작하는 함수)는 컴포넌트의 함수 안에만 적어야 함. (return() 안에다가 적을 수 없음)
 
+ > [!NOTE] Custom hook의 사용은 (Toss의 Slash Github)[https://github.com/toss/slash/tree/main/packages/react/react/src/hooks]에서 영감을 받아 인용 됨. Custom hook 사용예시 참고.
 
 # Import/Export
 ### 특징/유의점
@@ -864,7 +867,11 @@ function Children(){
 
 
 # Redux Toolkit
-모든 components가 props 없이 state 공유 가능. store.js에 모든 state가 저장되어 있음. 
+- 모든 components가 props 없이 state 공유 가능. store.js에 모든 state가 저장되어 있음. 
+- Redux에서 사용하는 용어
+ - action: 함수 객체
+ - reducer: Action들을 모아 놓는 곳. state를 변경하기 위해서 사용
+ - payload: 화물, 소포라는 뜻으로 dispatch()에서 파라미터(화물) 받아올 때씀.
 
 ### 설치 및 셋팅
 1. Redux 설치
@@ -872,23 +879,24 @@ function Children(){
 npm install @reduxjs/toolkit@1.8.1 react-redux
 ```
 
-2. src/store.js 파일생성 & 하단코드 복붙
+2. 셋팅 
 ```JavaScript
-import { configureStore } from '@reduxjs/toolkit'
+(store.js)
+// 1. src/store.js 생성 및 아래 코드 복붙
+import { configureStore, createSlice } from '@reduxjs/toolkit'
 
 export default configureStore({
-  reducer: { }
+  reducer: { 
+  }
 }) 
-```
 
-3. index.js에 가서 redux toolkit 쓰겠다고 선언해주기 
- - store.js에서 썼던 configureStore import 
- - <Provider store={store}></Provider>로 감싸기
-```JavaScript
+(index.js)
+// 2. import
 import store from './store.js'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+  // 3. <Provider store={store}></Provider>로 감싸기
   <Provider store={store}>
     <React.StrictMode>
       <BrowserRouter>
@@ -899,30 +907,18 @@ root.render(
 );
 ```
 
-### 용어
-- State
-컴포넌트에서 자동 재렌더링 하기위해 사용되는 데이터
-
-- Action
-함수 객체
-
-- Reducers
-Action들을 모아 놓는 곳?. state를 변경하기 위해서 사용
-
-- payload 
-화물, 소포라는 뜻으로 dispatch()에서 파라미터(화물) 받아올 때씀.
-
 ### 사용법
-1. Redux store에 state 보관법
+1. store에 단순 객체 보관 
+- store에 state 보관법
 ```JavaScript
 (store.js)
 import { configureStore, createSlice } from '@reduxjs/toolkit'
 
-// step 1. createSlice() 사용해서 저장하고 싶은 state만들기 (createSlice()와 useState()가 용도비슷)
+// 1. createSlice() 사용해서 저장하고 싶은 state만들기. (createSlice()와 useState()가 용도비슷)
 // { name : 'state이름', initialState : 'state값' }
 let userName = createSlice({
   name: "userName",
-  initialState: "kim" 
+  initialState: "Kim" 
 })
 
 // 2. configureStore()에 생성한 state 등록. 여기 등록한 state는 모든 컴포넌트가 자유롭게 사용가능
@@ -930,24 +926,23 @@ let userName = createSlice({
 export default configureStore({
   reducer: { 
     userName: userName.reducer
-
   }
-}) 
+});
 ```
-
-2. Redux store에 있는 state 사용법
-**useSelector( (state)=>{ return state} )** 사용하여 redux store에 있는 모든 state가져 옴.
+- store에 저장된 state 사용법
 ```JavaScript
 (Cart.js)
+// 1. import useSelector()
 import { useSelector } from 'react-redux';
 
 function Cart() {
+  // 2. useSelector()이용하여 store에 있는 모든 state가져옴.
   // 아래 3가지 다 동일한 결과값. 편한것으로 사용
   let {userName} = useSelector( (state)=>{ state } );
   let userName1 = useSelector( (state)=>{ return state.userName });
   let userName2 = useSelector( (state)=> state.userName );
   
-  console.log(userName);
+  console.log(userName); // 결과값: Kim
 
   return(
     [생략]
@@ -955,89 +950,175 @@ function Cart() {
 }
 ```
 
-> [!Note]
-> Redux store안에 모든걸 넣지는 말기! 컴포넌트간 공유가 필요없으면 그냥 useState()쓰면 되니깐.
-
-3. store의 state 변경법
-- initialState 가 object/array가 아닌경우
-step 1.  'reducers'에 state 수정해주는 함수 만들고 export
-**export let {** [만든함수이름] **} =** [변수]**.actions**
+2. store에 함수 추가: initialState 가 object/array가 아닌경우
+- store에 state 보관법
 ```JavaScript
 (store.js)
 import { configureStore, createSlice } from '@reduxjs/toolkit'
 
+// 1. createSlice() 사용: 초기 값은 initialState에 저장하고 , 함수는 reducers :{} 안에 추가
 let userName = createSlice({
   name: "userName",
   initialState: "Kim",
   reducers: {
+    // 2. 추가하고 싶은 함수는 reducers에 추가, 함수 파라미터로 initialState 접근 가능
+    // initialState가 object/array가 아닌 경우 state로 바로 호출
     changeName(state) {
-      return "John" + state //John Kim
+      return "John" + state // John Kim
     },
     fun1(state){
-      return ''
+      return 'test'
     }
   } 
 })
-export let { changeName } = userName.actions
+// 3. 생성한 함수들 내보내기
+export let { changeName, fun1 } = userName.actions
+
+// 4. configureStore()에 생성한 state 등록. 여기 등록한 state는 모든 컴포넌트가 자유롭게 사용가능
+// { 작명 : createSlice만든거.reducer } 
+export default configureStore({
+  reducer: { 
+    userName : userName.reducer
+  }
+}) 
 ```
-step 2. 만든함수 import해서 사용
-***let dispatch = useDispatch();***       
-***dispatch(*** [함수이름] ***)***
+- store에 저장된 state 사용법 
 ```JavaScript
-(child.js)
+(Child.js)
+// 1. 함수 사용하기 위해 useDispatch() 가져오기 + store에 저장된 함수 가져오기 
+import { useSelector, useDispatch } from 'react-redux';
 import { changeName } from '../store';
 
 function Child() {
-  let dispatch = useDispatch(); // useDispatch(): store.js로 요청보내주는 함수
+  let userName = useSelector( (state)=> state.userName );
+  // 2. useDispatch() 선언: store.js로 요청보내주는 함수
+  let dispatch = useDispatch();
 
   return(
     <>
+      // 3. 사용: dispatch()를 통해서 changeName()호출
       <button onClick={ ()=> dispatch( changeName() ) }>변경</button>
+      <p>{userName}</p> // 처음에는 Kim이고, 위에 버튼 누르면 John Kim으로 변경
     </>
   )
 }
 ```
 
-- initialState 가 object/array인 경우
-**state.**[객체키]로 접근
+3. store에 변경 함수 추가: initialState 가 object/array인 경우
+- store에 state 보관법
 ```JavaScript
+(store.js)
+import { configureStore, createSlice } from '@reduxjs/toolkit'
+
+// 1. createSlice() 사용: 초기 값은 initialState에 저장하고 , 함수는 reducers :{} 안에 추가
 let user = createSlice({
   name: "user",
   initialState: { name: "Kim", age: 20 },
   reducers: {
+    // 2. 추가하고 싶은 함수는 reducers에 추가, 함수 파라미터로 initialState 접근 가능
+    // initialState가 object/array인 경우는 state.OBJECT_KEY로 접근
     changeName(state) {
       state.name = "park" // Immer.js라는 라이브러리가 자동으로 설치가 되어서, 알아서 state 복사본을 복사해서 리턴해줌
     },
-    addAge(state) {
+    incAge(state) {
       state.age += 1
     }
   } 
 })
+// 3. 생성한 함수들 내보내기
 export let { changeName, incAge } = user.actions
+
+// 4. configureStore()에 생성한 state 등록. 
+export default configureStore({
+  reducer: { 
+    user : user.reducer
+  }
+}) 
 ```
-- 파라미터로 값을 전달 받고 싶은 경우
-**action.payload**사용
+- store에 저장된 state 사용법 
 ```JavaScript
+(Child.js)
+// 1. 함수 사용하기 위해 useDispatch() 가져오기 + store에 저장된 함수 가져오기 
+import { useSelector, useDispatch } from 'react-redux';
+import { incAge } from '../store';
+
+function Child() {
+  // 2. state값 가져오기 + state의 저장 함수 쓸 준비
+  let user = useSelector( (state)=> state.user );
+  let dispatch = useDispatch();
+
+  return(
+    <>
+      // 3. 사용
+      <button onClick={ ()=>dispatch(incAge()) }>나이 한살 추가</button>
+      <p>{user.age}</p> // 결과 값: 20 -> 21
+    </>
+  )
+}
+```
+
+4. store의 함수 호출 시, 파라미터로 값을 전달받고 싶은 경우
+- store에 state 보관법
+```JavaScript
+(store.js)
+import { configureStore, createSlice } from '@reduxjs/toolkit'
+
+// 1. createSlice() 사용: 초기 값은 initialState에 저장하고 , 함수는 reducers :{} 안에 추가
 let user = createSlice({
   name: "user",
   initialState: { name: "Kim", age: 20 },
   reducers: {
+    // 2. 추가하고 싶은 함수는 reducers에 추가
+    // state: initialState의 값, action.payload: 파라미터로 전달받은 값
     incAge(state, action) {
       state.age += action.payload
     }
   } 
 })
+// 3. 생성한 함수들 내보내기
 export let { incAge } = user.actions
+
+// 4. configureStore()에 생성한 state 등록
+export default configureStore({
+  reducer: { 
+    user : user.reducer
+  }
+}) 
 ```
 
-4. Import/Export
+- store에 저장된 state 사용법 
+```JavaScript
+(Child.js)
+// 1. 함수 사용하기 위해 useDispatch() 가져오기 + store에 저장된 함수 가져오기 
+import { useSelector, useDispatch } from 'react-redux';
+import { incAge } from '../store';
+
+function Child() {
+  // 2. state값 가져오기 + state의 저장 함수 쓸 준비
+  let user = useSelector( (state)=> state.user );
+  let dispatch = useDispatch();
+
+  return(
+    <>
+      // 3. 사용: dispatch()를 통해서 changeName(PAYLOAD)호출
+      <button onClick={ ()=>dispatch(incAge(5)) }>나이 5살 추가</button>
+      <p>{user.age}</p> // 결과 값: 20 -> 25
+    </>
+  )
+}
+```
+
+### Import/Export
 store.js가 너무 길어져서 파일 분리하고 싶다면? => 예를들어, store.js 부분 중 user부분 분리하고 싶음.   
 
-1) step1. src 밑에 폴더랑 파일 새로 만들기: src/store/[Slice이름]Slice.js ex) userSlice.js
-2) 분리하고 싶은 코드 자르기
-ex)
+Step 1. src 밑에 폴더랑 파일 새로 만들기: src/store/[Slice이름]Slice.js ex) userSlice.js   
+Step 2. 분리하고 싶은 코드 잘라서 새로운 파일에 붙여넣고, createSlice()등 필요한 라이브러리 import
 ```Javascript
-(store.js 에서 user 부분 자르기)
+(userSlice.js)
+// 1. 필요한 함수들 import
+import { createSlice } from "@reduxjs/toolkit"
+
+// 2. createSlice()함수
 let user = createSlice({
   name: "user",
   initialState: { name: "Kim", age: 20 },
@@ -1053,21 +1134,53 @@ let user = createSlice({
     }
   } 
 })
-export let { changeName, incAgeBy1, incAge } = user.actions
-```
-3) 새롭게 만든 userSlice.js에 붙여넣고 createSlice() 등 필요한 함수 import
-    다른곳에서 쓰기 위해서 actions들과 user slice 객체 export
-```JavaScript
-import { createSlice } from "@reduxjs/toolkit"
-
-let user = createSlice({
-  [생략: 위랑 동일]
-})
+// 3. 다른 곳에서 쓰기 위해서 함수(actions) export
 export let { changeName, incAgeBy1, incAge } = user.actions
 
+// 4. 다른 곳에서 쓰기 위해서 객체 export
 export default user
 ```
-4) 필요한 곳에서 사용
+Step 4. store.js에서 import
+```JavaScript
+(store.js)
+// 1. 잘라냈던 userSlice import
+import user from './store/userSlice'
+
+[생략]
+
+// 2. configureStore()에 저장
+export default configureStore({
+  reducer: { 
+    user : user.reducer,
+    [생략]
+  }
+}) 
+```
+
+Step 5. 다른곳에서 user state 쓰고 싶을 때 이전과 동일하게 사용. but, import 경로가 store.js가 아닌 [Slice이름]Slice.js임.
+```JavaScript
+(Child.js)
+// 1. 함수 사용하기 위해 useDispatch() 가져오기 + store에 저장된 함수 가져오기 
+import { useSelector, useDispatch } from 'react-redux';
+import { incAge } from '../store/userSlice';
+
+function Child() {
+  // 2. state값 가져오기 + state의 저장 함수 쓸 준비
+  let user = useSelector( (state)=> state.user );
+  let dispatch = useDispatch();
+
+  return(
+    <>
+      // 3. 사용: dispatch()를 통해서 changeName(PAYLOAD)호출
+      <button onClick={ ()=>dispatch(incAge(5)) }>나이 5살 추가</button>
+      <p>{user.age}</p> // 결과 값: 20 -> 25
+    </>
+  )
+}
+```
+
+> [!Note]
+> Redux store안에 모든걸 넣지는 말기! 컴포넌트간 공유가 필요없으면 그냥 useState()쓰면 되니깐.
 
 
 # LocalStorage 

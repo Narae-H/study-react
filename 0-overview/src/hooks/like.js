@@ -12,8 +12,8 @@ export function useLike(){
 
 export function useUsername() {
   let [userName, setUserName] = useState("");
-  axios.get('/username.json').then( (a)=>{
-    setUserName(a.data);
+  axios.get('/username.json').then( (res)=>{
+    setUserName(res.data);
   })
 
   return userName;
