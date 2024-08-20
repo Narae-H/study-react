@@ -1,28 +1,27 @@
 import Table from 'react-bootstrap/Table';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeStocks, decCountBy1, incCountBy1, setCartItems } from '../store';
-import { changeName, incAgeBy1, incAge } from './../store/userSlice'
+import { incAge, incAgeBy1 } from '../store/userSlice';
 import { memo, useMemo, useState } from 'react';
 
 function Cart() {
+  // let state = useSelector( (state) => state );
   // let {userName} = useSelector( (state)=>{ return state})
   // let stockList = useSelector( (state)=> state.stockList )
-  // console.log(userName);
-  // console.log(stockList);
-  let state = useSelector( (state) => state );
+  let {user, cartItems} = useSelector( (state) => state );
   let dispatch = useDispatch();
 
   return (
     <>
-      <p>{state.user.name}의 장바구니</p>
+      <p>{user.name}의 장바구니</p>
       <div>
-        {state.user.age}
+        {user.age}
         <button onClick={ ()=>dispatch(incAgeBy1()) }>나이 한살 더</button>
         <button onClick={ ()=>dispatch(incAge(5)) }>나이 원하는만큼</button>
       </div>
       <div>
         <button onClick={ ()=>{
-          let copiedCartItems = [...state.cartItems];
+          let copiedCartItems = [...cartItems];
           copiedCartItems.sort( (a, b)=>{ 
             if( a.name > b.name) {
               return 1
@@ -46,7 +45,7 @@ function Cart() {
         </thead>
         <tbody>
           {
-            state.cartItems.map( (item, i)=>
+            cartItems.map( (item, i)=>
               <tr key={i}>
                 <td>{i+1}</td>
                 <td>{item.name}</td>
