@@ -1567,6 +1567,11 @@ function App(){
   )
 }
 ```
+# React build
+React는 개발 끝나면 build를 해야 쓸 수 있음. Build를 하고 나면 build folder 생성됨. React코드 수정할 때마다 build 할 필요 없고, 마지막 deploy할 때만 build 하면 됨.
+```
+npm run build
+```
 
 # 유용한 JavaScript 문법
 ### forEach()
