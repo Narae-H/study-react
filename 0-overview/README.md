@@ -1704,6 +1704,30 @@ let foundIndex = inventory.findIndex( (ele)=>{ return ele.name === "cherries" })
 console.log( inventory[foundIndex] ); // { name: 'cherries', quantity: 5 }
 ```
 
+### some()
+각 요소들 중 하나라도 true 값을 리턴한다면, true
+**Array.prototype.some(** ([element], [index], [array]) => { return [조건] } **)**
+```JavaScript
+const array = [1, 2, 3, 4, 5];
+
+// Checks whether an element is even
+const even = (element) => element % 2 === 0;
+
+console.log(array.some(even)); // Expected output: true
+```
+
+### every()
+각 요소들 모두가 다 true 이여야만, true
+**Array.prototype.every(** ([element], [index], [array]) => { return [조건] } **)**
+```JavaScript
+const array = [1, 2, 3, 4, 5];
+
+// Checks whether an element is even
+const even = (element) => element % 2 === 0;
+
+console.log(array.some(even)); // Expected output: false
+```
+
 ### Array 
 1. 함수
 - arr.push([추가 데이터]): 배열 끝에 추가
