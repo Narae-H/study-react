@@ -1750,3 +1750,91 @@ console.log(uniqueArr) // 결과: [1, 2 ,3]
 # JavaScript: Sync / async 
 - JavaScript는 일반적으로 synchronous(동기) 처리 => 윗부분부터 순서대로 코드가 실행
 - 하지만, 일부 함수들(시간이 오래걸리는애들)은 asynchronous(비동기)로 처리. => 순차적으로 실행되지 않고 완료되면 실행 ex) ajax(), setTimeout()
+
+# Declaring Variables Shorthand (변수 단축 선언)
+같은 선언 타입을 가진 변수를 한줄로 선언. const로 단축 선언 시, 초기값 할당하지 않으면 SyntaxError 발생.
+```JavaScript
+let a,
+    b = 1,
+    c;
+//a : undefined
+//b : 2
+//c : undefined
+
+const d = 4,
+    e = 5;
+//const d,e=5; => Uncaught SyntaxError: Missing initializer in const declaration
+```
+
+# Short-circuit Evaluation (단축 평가 값)
+논리 연산자는 왼쪽에서 오른쪽으로 실행되므로, 왼쪽에서 true가 나오면, 더 이상 오른쪽의 값은 평가되지 않고 바로 종료.   
+- true가 되는 조건: 값이 존재   
+- false가 되는 조건: null, undefined, false, etc.
+```JavaScript
+const str = "some text";
+const result1 = str || "default value";
+// result1 = "some text";
+
+const nothing = null;
+const result2 = nothing || "default value";
+// result2 = "default value";
+
+const result3 = str && "If str is truthy return this";
+//result3 = "If str is truthy return this"
+```
+
+# Property shorthand (단축 속성명)
+객체에 속성으로 사용하려는 키 값과 같은 이름의 변수가 있을 경우, key: value할당을 축양형으로 사용할 수 있음.
+```JavaScript
+const a = 1,
+    b = 2,
+    c = 3;
+
+const obj1 = {
+    a: a,
+    b: b,
+    c: c,
+};
+
+const obj2 = { a, b, c }; // {a:1,b:2,c:3}
+```
+
+# Spread Syntax(전개구문)
+Object앞에 '...'연산자를 붙이면 object의 literal을 복제하는 기능.
+
+# Rest Parameter(나머지 매개변수)
+매개변수 이름 앞에 '...'을 붙여, 할당되지 않는 매개변수를 배열로 받는 기능
+```JavaScript
+function fn1(name, age, ...arg) {
+    // name = 'Doe'
+    // age = 21
+    // arg = ['handsome','cool','nice'];
+}
+fn1("Doe", 21, "handsome", "cool", "nice");
+```
+# Default Parameter Values(기본값 매개변수)
+argument 없이 함수가 실행될 경우 undefined 대신 사용될 값을 할당.
+```JavaScript
+function fn1(name = "John Doe", age = 30) {
+    console.log(`${name} is ${age} years old`);
+}
+fn1();
+//John Doe is 30 years old
+fn1("Peter", 15);
+//Peter is 15 years old
+```
+
+# Object Destructuring(구조 분해 할당)
+배열/객체의 속성을 해체하여, 그 값을 개별 변수에 담을 수 있게 하는 표현식
+```JavaScript
+let [a, b] = ["1", "2", "3"];
+// a : 1 , b : 2
+let [c, d, ...e] = ["1", "2", "3", "4", "5"];
+// c : 1, d : 2, e : [3, 4, 5]
+```
+
+```JavaScript
+let o = { p: 42, q: true };
+let { p: foo, q: bar } = o;
+// foo = 42 , bar = true
+```
