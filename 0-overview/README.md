@@ -64,6 +64,44 @@ npx create-react-app [프로젝트명]
 > ```
 > </details>
 
+# Component
+### Component 란?
+리액트에서 앱을 이루는 가장 작은 조각. 레고블럭같은 느낌.   
+컴포넌트는 새로운 컴포넌트를 생성할 수 있고, MVC의 뷰를 독립적으로 구성하여 재사용할 수 있음.
+
+### 함수 컴포넌트 (Stateless Functional Component)
+자바스크립트 함수 기반 컴포넌트. 자바스크립트 함수를 선언하듯이 `function`으로 컴포넌트를 정의하고, return문에 JSX코드 반환
+1) 기본 선언법으로 만든 함수 컴포넌트
+```JavaScript
+function MyComponent() {
+
+  return (
+    <div>
+      Hello React!
+    </div>
+  );
+}
+```
+
+3) 화살표 문법으로 만든 함수 컴포넌트
+```JavaScript
+const MyComponent = () => {
+
+  return (
+    <div>
+      Hello React!
+    </div>
+  );
+};
+```
+![NOTE] VS Code 환경에서 `React Code snippet 라이브러리를 사용하면 편하게 생성 가능. rsc를 입력하면 함수형 컴포넌트 자동 완성
+
+### 클래스 컴포넌트
+자바스크립트의 클래스 기반 컴포넌트로 class를 정의하고 render()함수에서 jsx 코드를 반환
+
+![NOTE] VS Code 환경에서 `React Code snippet 라이브러리를 사용하면 편하게 생성 가능. rcc를 입력하면 함수형 컴포넌트 자동 완성
+
+
 # state
 ### state란?
 자료를 잠깐 보관하는 곳. state는 변동 사항이 생기면 자동으로 html을 재랜더링 해줌 => 즉, **자주 값이 자주 바뀌어서 재랜더링이 필요한 곳**에 쓰면 됨.
