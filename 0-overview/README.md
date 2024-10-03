@@ -1220,6 +1220,53 @@ function Child() {
 > [!Note]
 > Redux store안에 모든걸 넣지는 말기! 컴포넌트간 공유가 필요없으면 그냥 useState()쓰면 되니깐.
 
+### Redux 에서 api 호출한 결과 저장하고 싶을 때
+개발하다보면 전역에서 자주 사용되는 api를 호출하거나, api 호출한 결과를 여러 군데에서 사용해야 할 상황이 생기는데, 이와 같은 비동기 처리를 redux store에서는 자체적으로 하지 못함.   
+=> Redux를 사용할 때는 redux-thunk, redux-saga와 같은 미들웨어를 사용해서 비동기 처리를 진행   
+=> 하지만, 위의 기능들 같은 경우 Redux와 같이 사용하기 위한 러닝커브가 조금 있기 때문에, Redux Toolkit의 createAsyncThunk를 사용해 비동기 처리를 진행
+
+- createAsyncThunk() 사용법   
+Promise의 3가지 상태와 같이 pending, fulfilled, rejected의 상태를 갖음
+```JavaScript
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+
+// 1. CreateAsyncThunk를 이용하여 데이터 가져옴
+export const fetchSkills = createAsyncThunk(
+  'skills/fetchSkills',
+  async () => {
+    const response = await axios.get('/data/skills/skills.json');
+    return response.data.skills;
+  }
+);
+
+// 2. extraReducers라는 것을 통해서 createAsyncThunk로 생성한 Thunk 등록 (Redux 자체적으로는 비동기 처리를 지원하지 않음)
+const skillsSlice = createSlice({
+  name: 'skills',
+  initialState: {
+    items: [],
+    status: 'idle',
+    error: null
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchSkills.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchSkills.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items = action.payload;
+      })
+      .addCase(fetchSkills.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      });
+  }
+});
+
+export default skillsSlice.reducer;
+```
 
 # LocalStorage 
 브라우저 안에 있는 저장소
