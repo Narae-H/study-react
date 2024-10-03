@@ -427,7 +427,7 @@ function Child2({val}) { // function Child2({val1, val2, val3}) 이렇게 여러
 # Hook
 ###  Hook 이란?
 Hook은 16.8에서 새롭게 도입된 기능으로 함수형 컴포넌트에서 React state와 생명주기 기능을 연동할 수 있게 해주는 함수.
-내장훅(use로 시작하는 함수)과 custom hooks가 있음 ex) useState(), useEffect()
+내장훅(use로 시작하는 함수)과 custom hooks가 있음 ex) useState(), useEffect(), useRef()
 
 ### Hook 사용 이유
 컴포넌트 간의 계층을 바꾸지 않고 상태 로직을 재사용 할 수 있음.
