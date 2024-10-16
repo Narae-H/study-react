@@ -1,4 +1,4 @@
-해당 내용은 [코딩애플🍎](https://codingapple.com/) 수업을 듣고 정리한 글로, React 16.8 버전 이후의 내용을 담고 있습니다. 
+해당 내용은 [코딩애플🍎](https://codingapple.com/) 수업을 듣고 [별코딩](https://www.youtube.com/@starcoding)을 참고하여 정리한 글로, React 16.8 버전 이후의 내용을 담고 있습니다. 
 
 # React 란? :camera_flash:
 Single Page Application으로 새로고침 없이 부드럽게 이동 가능한데 그 이유는
@@ -425,15 +425,15 @@ function Child2({val}) { // function Child2({val1, val2, val3}) 이렇게 여러
 2) [Redux Toolkit등 외부라이브러리](#redux-toolkit)
 
 # Hook
-###  Hook 이란?
+##  Hook 이란?
 Hook은 16.8에서 새롭게 도입된 기능으로 함수형 컴포넌트에서 React state와 생명주기 기능을 연동할 수 있게 해주는 함수.
 내장훅(use로 시작하는 함수)과 custom hooks가 있음 ex) useState(), useEffect(), useRef()
 
-### Hook 사용 이유
+## Hook 사용 이유
 컴포넌트 간의 계층을 바꾸지 않고 상태 로직을 재사용 할 수 있음.
 하나의 컴포넌트 생명주기가 아닌 기능을 기반으로 하여 작은 함수 단위로 나눌 수 있음.
 
-### Hook 규칙/문법
+## Hook 규칙/문법
 1) 같은 hook을 여러 번 호출 가능
 ```JavaScript
 function App() {
@@ -467,7 +467,161 @@ function App() {
 }
 ``` 
 
-### Custom hook
+## 자주쓰는 React Hooks
+### useState()
+<b> 1. 언제 사용하는가? </b>   
+[`state`](#state) 를 생성하고 업데이트할 수 있는 훅으로 `setState()` 함수를 이용하여 `state` 상태를 변경할 경우, 재랜더링이 발생.
+
+<b> 2. 문법 </b>   
+- 기본 문법   
+  ```JavaScript
+  import { useState } from "react";
+
+  const [state, setState] = useState(DEFAULT_VALUE);
+  ```
+
+- 이전 state 값과 새로 변경 할 값이 연관되어 있다면 => argument로 이전 state 사용
+  ```JavaScript
+  import { useState } from "react";
+
+  const [state, setState] = useState( (prevState) => {
+    const newState = [ newValue, ...prevState ]; 
+    return newState;
+  });
+  ```
+
+- useState를 사용해서 초기 값을 받아올때 무거운 일을 해야 한다면 => useState의 인자로 콜백함수 사용( 맨 처음 랜더링이 될 때만 `무거운일()` 실행하도록 할 수 있음)
+  ```JavaScript
+  import { useState } from "react";
+
+  const [state, setState] = useState( () => {
+    return 무거운일();
+  });
+  ```
+
+### useEffect(): Lifecycle을 제어함수
+> [!NOTE] 
+> <details>
+> <summary> Lifecycle이란? </summary>
+>
+> React에서 일어나는 `mount(화면에 최초로 랜더링)`, `update (재랜더링)`, `unmount (화면에서 사라질 때)` 3개의 단계
+> </details>
+   
+<b> 1. 언제 사용하는가? </b>   
+- 특정 lifecycle 단계에서 실행하고 싶을 때 
+- HTML 랜더링 후 실행하고 싶을 때 (JavaScript는 코드를 위에서 아래로 읽으므로 상단에 너무 시간이 오래 걸리는 작업이 있으면 HTML 랜더링이 안됨)
+- 서버에서 데이터 가져오는 작업할 때 (데이터를 가져오기전에 HTML 랜더링 먼저되어도 상관없으므로)
+- 타이머 장착하는 것들
+
+<b> 2. 문법 </b>
+- 기본 문법     
+  `컴포넌트가 랜더링 될 때(mount + update)`마다 실행   
+  클래스 컴포넌트의 componentDidMount, componentDidUpdate 과 동일
+  ```JavaScript
+  import { useEffect } from 'react'; 
+
+  useEffect (() => { 
+    실행할코드 
+  } ); 
+  ```
+  
+- `화면에 첫 랜더링(mount)` 될 때만 실행
+  ```JavaScript
+  import { useEffect } from 'react'; 
+
+  useEffect (() => { 
+    실행할코드 
+  }, []); // 빈 배열 전달
+  ```
+
+- `화면에 첫 랜더링(mount)` + `dependency가 변경`될 때마다 실행
+  ```JavaScript
+  import { useEffect } from 'react'; 
+
+  useEffect (() => { 
+    실행할코드 
+  }, [배열]); // 여기서 배열은 dependency라고 하며, 필수 값은 아님.
+  ```
+
+
+
+==> 여기부터 정리 필요
+별코딩: https://www.youtube.com/watch?v=kyodvzc5GHU&list=PLZ5oZ2KmQEYjwhSxjB_74PoU6pmFzgVMO&index=2
+- `화면에서 사라질 때(unmount)` + `랜더링(첫 랜더링 제외)시 불릴 useEffect()안의 코드 실행 전` 마다 실행 (Clean Up)    
+  useEffect()안의 코드 실행 전에 `return ()=>{ }`안의 코드를 먼저 실행   
+  타이머제거, socket 연결 요청 제거, ajax요청 중단 이런 코드로 많이 쓰임
+  ```JavaScript
+  import { useEffect } from 'react'; 
+
+  useEffect (() => { 
+    실행할코드2 // 그 다음 실행됨
+    return () => {
+      실행할코드1 //먼저 실행되고
+    } 
+  }
+  // 4-1) useEffect안의 코드 실행 전에 항상 return 안의 코드가 먼저 실행
+  useEffect (() => { 
+    return () => {
+      실행할코드1 
+    }
+  })
+
+  // 4-2) unmout시 1회 실행
+  useEffect( ()=> {
+    return () => {
+      함수1();
+    }
+  }, [])
+  ```
+
+<b> 3. 사용 예시 </b>   
+state 변경 함수의 asynchronous로 인한 문제점 해결
+- Senario: 버튼을 누를 때마다
+1) count라는 state를 +1 (버튼누른 횟수 기록용)  
+2) age라는 state도 +1    
+3) count 가 3 이상이면 더 이상 age증가 X   
+=> 예상 시나리오는 (3)번이 제대로 동작할 것 같으나, 실제로는 asynchronous 때문에 count가 3 이상이여도 age가 증가할 수도 있음. setAge()가 setCount()보다 먼저 실행된다면.
+```JavaScript
+function App(){
+  let [count, setCount] = useState(0);
+  let [age, setAge] = useState(20);
+
+  return(
+    <div>
+      <p>{count}</p>
+      <p>{age}</p>
+      <button onClick={()=>{ 
+        setCount(count++); 
+        if(count < 3){ setAge(age++)}  
+      }}>1씩 증가</button>
+    </div>
+  )
+}
+```
+
+-해결방법: useEffect() 사용하여 count가 변경될 때만 age값이 변동하도록 설정.
+```JavaScript
+function App() {
+  let [count, setCount] = useState(0);
+  let [age, setAge] = setState(20);
+
+  useEffect(()=>{
+    setAge(age++);
+  }, [count])
+
+  return(
+    <div>
+      <p>{count}</p>
+      <p>{age}</p>
+      <button onClick={ ()=>{
+        setCount(count++);
+      }}></button>
+    </div>
+  )
+}
+```
+
+## Custom hook
 - 반복되는 로직을 함수(Custom hook)로 만들어서 으로 코드 재사용하기.
 - hook을 여러다른 컴포넌트에서 재사용할 때 상태값은 컴포넌트 별로 독립적으로 추가. => 즉, 컴포넌트A 에서 값을 변경해도 컴포넌트B에서 값 변경 안됨. 
 
@@ -676,106 +830,6 @@ function App() {
 > ```
 > 
 > </details>
-
-# Lifecycle을 제어함수: useEffect()
-### Lifecycle이란?
-React에서 일어나는 'mount(페이지 최초로 로딩), update (HTML재랜더링), unmount (다른페이지로 이동)' 3개의 단계
-
-### Lifecycle의 특정 단계에 어떻게 코드가 실행되게 할 수 있을까?
-- useEffect()사용 
-- 언제 useEffect()를 사용하면 될까?
-  1) 특정 lifecycle 단계에서 실행하고 싶을 때 
-  2) HTML 랜더링 후 실행하고 싶을 때 (JavaScript는 코드를 위에서 아래로 읽으므로 상단에 너무 시간이 오래 걸리는 작업이 있으면 HTML 랜더링이 안됨)
-  3) 서버에서 데이터 가져오는 작업할 때 (데이터를 가져오기전에 HTML 랜더링 먼저되어도 상관없으므로)
-  4) 타이머 장착하는 것들
-
-### useEffect() 문법
-useEffect()는 상태 변화(side effect: 의도하지 않은 결과)가 있을 때 이를 감지하여 특정 작업을 해줄 수 있는 훅.
-**useEffect( () =>{** [실행할코드] }, [dependency]**)**
-```JavaScript
-function App() {
-  // 1. mount + update 될 때마다 실행
-  // 클래스 컴포넌트의 componentDidMount, componentDidUpdate 과 동일
-  useEffect (() => { 실행할코드 })
-
-  // 2. mount 단계 (1회) 실행. (dependency에 빈 배열[] 전달) 
-  // 클래스 컴포넌트의 componentDidMount와 동일
-  useEffect (() => { 실행할코드 }, [])
-
-  // 3. mount와 + dependency가 변경될 때마다 실행
-  // 클래스 컴포넌트의 componentDidMount, componentDidUpdate 과 동일
-  useEffect (() => { }, [dependency]) // [[dependency]] 는 여러개 넣을 수 있음
-
-  // 4. clean up function: useEffect()안의 코드 실행 전에 return ()=>{}안의 코드를 먼저 실행  => 타이머제거, socket 연결요청 제거, ajax요청 중단 이런 코드를 많이 작성
-  useEffect (() => { 
-    실행할코드2 // 그 다음 실행됨
-    return () => {
-      실행할코드1 //먼저 실행되고
-    } 
-  }
-  // 4-1) useEffect안의 코드 실행 전에 항상 return 안의 코드가 먼저 실행
-  useEffect (() => { 
-    return () => {
-      실행할코드1 
-    }
-  })
-
-  // 4-2) unmout시 1회 실행
-  useEffect( ()=> {
-    return () => {
-      함수1();
-    }
-  }, [])
-
-```
-
-### state 변경 함수의 asynchronous로 인한 문제점 해결
-- Senario: 버튼을 누를 때마다
- 1) count라는 state를 +1 (버튼누른 횟수 기록용)  
- 2) age라는 state도 +1    
- 3) count 가 3 이상이면 더 이상 age증가 X   
-=> 예상 시나리오는 (3)번이 제대로 동작할 것 같으나, 실제로는 asynchronous 때문에 count가 3 이상이여도 age가 증가할 수도 있음. setAge()가 setCount()보다 먼저 실행된다면.
-```JavaScript
-function App(){
-  let [count, setCount] = useState(0);
-  let [age, setAge] = useState(20);
-
-  return(
-    <div>
-      <p>{count}</p>
-      <p>{age}</p>
-      <button onClick={()=>{ 
-        setCount(count++); 
-        if(count < 3){ setAge(age++)}  
-      }}>1씩 증가</button>
-    </div>
-  )
-}
-```
-
--해결방법: useEffect() 사용하여 count가 변경될 때만 age값이 변동하도록 설정.
-```JavaScript
-function App() {
-  let [count, setCount] = useState(0);
-  let [age, setAge] = setState(20);
-
-  useEffect(()=>{
-    setAge(age++);
-  }, [count])
-
-  return(
-    <div>
-      <p>{count}</p>
-      <p>{age}</p>
-      <button onClick={ ()=>{
-        setCount(count++);
-      }}></button>
-    </div>
-  )
-}
-```
-
-
 
 # Ajax (Asynchronous Javascript And XML) 요청
 JavaScript를 통해서 서버에 데이터를 비동기 방식으로 요청
