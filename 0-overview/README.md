@@ -468,7 +468,7 @@ function App() {
 ``` 
 
 ## 자주쓰는 React Hooks
-### useState()
+### useState(): 변수 & setter 선언
 <b> 1. 언제 사용하는가? </b>   
 [`state`](#state) 를 생성하고 업데이트할 수 있는 훅으로 `setState()` 함수를 이용하여 `state` 상태를 변경할 경우, 재랜더링이 발생.
 
@@ -509,8 +509,8 @@ function App() {
    
 <b> 1. 언제 사용하는가? </b>   
 - 특정 lifecycle 단계에서 실행하고 싶을 때 
-- HTML 랜더링 후 실행하고 싶을 때 (JavaScript는 코드를 위에서 아래로 읽으므로 상단에 너무 시간이 오래 걸리는 작업이 있으면 HTML 랜더링이 안됨)
-- 서버에서 데이터 가져오는 작업할 때 (데이터를 가져오기전에 HTML 랜더링 먼저되어도 상관없으므로)
+- useEffect()는 화면의 랜더링이 끝난 후 실행되므로, 랜더링 이후 실행하고 싶은 것이 있을 때 사용 (JavaScript는 코드를 위에서 아래로 읽으므로 상단에 너무 시간이 오래 걸리는 작업이 있으면 HTML 랜더링이 안됨)
+- 서버에서 데이터 가져오는 작업할 때 (데이터를 가져오기전에 HTML 랜더링 먼저되어도 상관없고, 데이터 가져오다가 state/props가 변경되어 또 서버에서 데이터 가져온다면 버그 야기 가능성도 있으므로)
 - 타이머 장착하는 것들
 
 <b> 2. 문법 </b>
@@ -534,7 +534,8 @@ function App() {
   }, []); // 빈 배열 전달
   ```
 
-- `화면에 첫 랜더링(mount)` + `dependency가 변경`될 때마다 실행
+- `화면에 첫 랜더링(mount)` + `dependency가 변경`될 때마다 실행   
+dependency에 따라 얼마나 자주 호출될지 달라짐.
   ```JavaScript
   import { useEffect } from 'react'; 
 
