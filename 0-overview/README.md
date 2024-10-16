@@ -522,7 +522,7 @@ function App() {
 
   useEffect (() => { 
     실행할코드 
-  } ); 
+  }); 
   ```
   
 - `화면에 첫 랜더링(mount)` 될 때만 실행
@@ -543,33 +543,30 @@ function App() {
   }, [배열]); // 여기서 배열은 dependency라고 하며, 필수 값은 아님.
   ```
 
-
-
-==> 여기부터 정리 필요
-별코딩: https://www.youtube.com/watch?v=kyodvzc5GHU&list=PLZ5oZ2KmQEYjwhSxjB_74PoU6pmFzgVMO&index=2
-- `화면에서 사라질 때(unmount)` + `랜더링(첫 랜더링 제외)시 불릴 useEffect()안의 코드 실행 전` 마다 실행 (Clean Up)    
+- `Clean up`: `화면에서 사라질 때(unmount)` + `랜더링(첫 랜더링 제외)시 불릴 useEffect()안의 코드 실행 전` 마다 실행 (Clean Up)    
   useEffect()안의 코드 실행 전에 `return ()=>{ }`안의 코드를 먼저 실행   
   타이머제거, socket 연결 요청 제거, ajax요청 중단 이런 코드로 많이 쓰임
   ```JavaScript
   import { useEffect } from 'react'; 
 
+  // 1) useEffect()에서 return() 사용하는 법
   useEffect (() => { 
-    실행할코드2 // 그 다음 실행됨
+    실행할코드2; // 2) 그 다음 실행 됨
     return () => {
-      실행할코드1 //먼저 실행되고
+      실행할코드1; // 1) 먼저 실행되고
     } 
   }
-  // 4-1) useEffect안의 코드 실행 전에 항상 return 안의 코드가 먼저 실행
+  // 2) useEffect안의 코드 실행 전에 항상 return 안의 코드가 먼저 실행
   useEffect (() => { 
     return () => {
-      실행할코드1 
+      실행할코드1; 
     }
   })
 
-  // 4-2) unmout시 1회 실행
+  // 3) unmout시 1회 실행
   useEffect( ()=> {
     return () => {
-      함수1();
+      실행할코드1;
     }
   }, [])
   ```
@@ -620,6 +617,14 @@ function App() {
   )
 }
 ```
+### useContext()
+
+### useCallback()
+
+### useRef()
+
+### useMemo()
+
 
 ## Custom hook
 - 반복되는 로직을 함수(Custom hook)로 만들어서 으로 코드 재사용하기.
@@ -1977,3 +1982,9 @@ let o = { p: 42, q: true };
 let { p: foo, q: bar } = o;
 // foo = 42 , bar = true
 ```
+
+# 참고링크
+- [코딩애플 인강](https://codingapple.com/)
+- [코딩애플 유튜브](https://www.youtube.com/@codingapple)
+- [별코딩 유튜브](https://www.youtube.com/@starcoding) 
+- [리액트 공식문서](https://ko.legacy.reactjs.org/docs/getting-started.html)
