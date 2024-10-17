@@ -1902,7 +1902,7 @@ function Parent () {
 ```
 
 ### useMemo & useCallback
-- useMemmo: [useMemo](#usememo-컴포넌트-최적화-캐싱기능) 참고
+- useMemmo: [useMemo](#usememo-컴포넌트-성능-최적화) 참고
 - useCallback: [useCallback](#usecallback-컴포넌트-성능-최적화) 참고
 
 > [!NOTE]
