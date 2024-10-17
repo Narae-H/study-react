@@ -113,7 +113,7 @@ const MyComponent = () => {
 ### 문법
 - **기본 사용법**   
 **let[**_state이름, state변경 함수 이름으로 함수로 set[변수명]으로 작명_**]** = **useState(**_'state에 넣을 값'_**);**
-- state변경함수는 전부 asynchronous로 처리되기 때문에 현재의 값이 업데이트 되지 않는 값을 갖게 되면서 예상치 못한 문제가 생길 수도 있음. => 이걸 어떻게 처리하냐? [useEffect()](#lifecycle을-제어함수-useeffect) 를 써서 해결.
+- state변경함수는 전부 asynchronous로 처리되기 때문에 현재의 값이 업데이트 되지 않는 값을 갖게 되면서 예상치 못한 문제가 생길 수도 있음. => 이걸 어떻게 처리하냐? [useEffect()](#useeffect-lifecycle을-제어함수) 를 써서 해결.
 
 ```JavaScript
 (App.js)
@@ -469,10 +469,10 @@ function App() {
 
 ## 자주쓰는 React Hooks
 ### useState(): 변수 & setter 선언
-<b> 1. 언제 사용하는가? </b>   
+**1. 언제 사용하는가?**   
 [`state`](#state) 를 생성하고 업데이트할 수 있는 훅으로 `setState()` 함수를 이용하여 `state` 상태를 변경할 경우, 재랜더링이 발생.
 
-<b> 2. 문법 </b>   
+**2. 문법**   
 - 기본 문법   
   ```JavaScript
   import { useState } from "react";
@@ -507,13 +507,13 @@ function App() {
 > React에서 일어나는 `mount(화면에 최초로 랜더링)`, `update (재랜더링)`, `unmount (화면에서 사라질 때)` 3개의 단계
 > </details>
    
-<b> 1. 언제 사용하는가? </b>   
+**1. 언제 사용하는가?**   
 - 특정 lifecycle 단계에서 실행하고 싶을 때 
-- useEffect()는 화면의 랜더링이 끝난 후 실행되므로, 랜더링 이후 실행하고 싶은 것이 있을 때 사용 (JavaScript는 코드를 위에서 아래로 읽으므로 상단에 너무 시간이 오래 걸리는 작업이 있으면 HTML 랜더링이 안됨)
+- useEffect()는 화면의 랜더링이 끝난 후 실행되고, 랜더링 후 상태 dependecy가 변경 되었을 때 (JavaScript는 코드를 위에서 아래로 읽으므로 상단에 너무 시간이 오래 걸리는 작업이 있으면 HTML 랜더링이 안됨) => 재랜더링 방지는 X
 - 서버에서 데이터 가져오는 작업할 때 (데이터를 가져오기전에 HTML 랜더링 먼저되어도 상관없고, 데이터 가져오다가 state/props가 변경되어 또 서버에서 데이터 가져온다면 버그 야기 가능성도 있으므로)
 - 타이머 장착하는 것들
 
-<b> 2. 문법 </b>
+**2. 문법**
 - 기본 문법     
   `컴포넌트가 랜더링 될 때(mount + update)`마다 실행   
   클래스 컴포넌트의 componentDidMount, componentDidUpdate 과 동일
@@ -572,7 +572,7 @@ dependency에 따라 얼마나 자주 호출될지 달라짐.
   }, [])
   ```
 
-<b> 3. 사용 예시 </b>   
+**3. 사용 예시**   
 state 변경 함수의 asynchronous로 인한 문제점 해결
 - Senario: 버튼을 누를 때마다
 1) count라는 state를 +1 (버튼누른 횟수 기록용)  
@@ -620,16 +620,16 @@ function App() {
 ```
 
 ### useMemo(): 컴포넌트 성능 최적화
-<b> 0. 시작 전 알아야할 사항 </b>   
+**0. 시작 전 알아야할 사항**   
 - `Memoization`: 동일한 값을 리턴하는 함수를 반복적으로 호출해야 한다면, 맨 처음 값을 메모리에 저장해서 필요할 때(dependency가 변경될 때)마다 또 다시 계산하지 않고 메모리에서 꺼내서 재사용 하는 기법.
 => 자주 사용 하는 값을 캐싱을 해둬서 그 값이 필요할 때마다 캐시 값에서 꺼내서 씀.
 - `함수형 컴포넌트`는 말 그대로 `함수` 임. 함수형 컴포넌트가 랜더링이 된다는건 그 함수가 호출된다는 의미 -> 함수는 호출될 때 마다 그 내부에 정의되어 있는 모든 변수들이 초기화.  
 
-<b> 1. 언제 사용하는가? </b>   
+**1. 언제 사용하는가?**   
 - 컴포넌트 최적화할 때. (컴포넌트 내에서 동일한 함수를 반복적으로 호출 할 때)        
 useMemo는 memoization을 위해서 따로 메모리를 소비해서 값을 저장하는 것. => 따라서, 무분별하게 사용하면 메모리 과부화로 오히려 성능 저하 가능성 있음.
 
-<b> 2. 문법 </b>   
+**2. 문법**   
 - 기본 문법 
   ```JavaScript
   import { useMemo } from 'react';
@@ -640,7 +640,7 @@ useMemo는 memoization을 위해서 따로 메모리를 소비해서 값을 저�
   }, [디펜던시])       // 디펜던시: 디펜던시가 변경될 때 마다 다시 memoization을 해서 메모리 값을 업데이트.
   ```
 
-<b> 3. 사용 예시 </b>  
+**3. 사용 예시**  
 Senario: useEffect()를 사용하는데 `status라는 dependency가 존재`하는 경우   
 - `status`가 `원시 타입`인 경우:    
   |이벤트 | 랜더링 순서 |
@@ -680,7 +680,7 @@ Senario: useEffect()를 사용하는데 `status라는 dependency가 존재`하�
   => 아래 코드를 실행한다면 예상치 못한 결과가 나옴. 왜 그럴까? 
   |이벤트 | 랜더링 순서 |
   |------|------------|
-  |`숫자 변경 버튼` 클릭 | num 변경 ->  App() 재랜더링 -> status 값 변경 X -> <b>useEffect() 호출 안되기를 원했으나 호출됨??????</b> |  
+  |`숫자 변경 버튼` 클릭 | num 변경 ->  App() 재랜더링 -> status 값 변경 X -> **useEffect() 호출 안되기를 원했으나 호출됨??????** |  
   |`전등 변경 버튼` 클릭 | isOn 변경 ->  App() 재랜더링 -> status 값 변경 O -> useEffect() 호출 O | 
 
   ```JavaScript
@@ -760,14 +760,25 @@ Senario: useEffect()를 사용하는데 `status라는 dependency가 존재`하�
   export default App;
   ```
 
+> [!NOTE]
+> <details>
+> <summary>useMemo vs useEffect</summary>
+>
+> | | useMemo | useEffect|
+> |-|---------|----------|
+> |언제 동작     | 랜더링 과정 중 | 랜더링이 완료된 이후 & 랜더링 후 상태가 업데이트 되었을 때 |
+> |재랜더링 방지 | 방지 가능 | 방지 불가능 |
+> </details>
 
 ### useCallback(): 컴포넌트 성능 최적화
-<b> 1. 언제 사용하는가? </b>   
-- 컴포넌트 최적화할 때. (컴포넌트 내에서 동일한 함수를 반복적으로 호출 할 때)
-- useMemo와 다르게 인자로 전달한 콜백 함수 자체를 memoization 함.       
+**1. 언제 사용하는가?**   
+- 컴포넌트 내에서 `동일한 함수`를 반복적으로 호출 하여 최적화가 필요할 때 ( useMemo와 다르게 인자로 전달한 콜백 함수 자체를 memoization 함) 
+  - 자식 컴포넌트에 props로 함수(ex) 이벤트 핸들러 함수)를 전달하는 경우
+  - 외부에서 값을 가져오는 api를 호출하는 경우   
+
 useMemo는 memoization을 위해서 따로 메모리를 소비해서 값을 저장하는 것. => 따라서, 무분별하게 사용하면 메모리 과부화로 오히려 성능 저하 가능성 있음.
 
-<b> 2. 문법 </b>   
+**2. 문법**   
 - 기본 문법 
   ```JavaScript
   import { useCallback } from 'react';
@@ -778,7 +789,7 @@ useMemo는 memoization을 위해서 따로 메모리를 소비해서 값을 저�
   }, [디펜던시])       // 디펜던시: 디펜던시가 변경될 때 마다 다시 memoization을 해서 메모리 값을 업데이트.
   ```
 
-<b> 3. 사용 예시 </b>  
+**3. 사용 예시**  
 - `someFunction`가 `객체 타입(function)`이고, `useEffect()`만 사용   
   => 아래 코드를 실행한다면, useEffect()안의 코드가 계속 실행됨. 
   |이벤트 | 랜더링 순서 |
@@ -850,10 +861,6 @@ useMemo는 memoization을 위해서 따로 메모리를 소비해서 값을 저�
     export default App;
   }
   ```
-
-=> 여기서부터   
-https://www.youtube.com/watch?v=XfUF9qLa3mU&list=PLZ5oZ2KmQEYjwhSxjB_74PoU6pmFzgVMO&index=7
-12분 부터 보기
 
 ### useContext()
 
@@ -1807,17 +1814,45 @@ function App() {
 # React용 유용한개발자도구
 변환된 html, css말고, 컴포넌트 미리 보고 싶거나, props 확인하고 싶을 때
 
-### React용 개발자 도구 설치
-1. React   
+## React용 개발자 도구 설치
+### React Developer Tools   
 Chrome에서 **Chrome web store** 접속 > **React Developer Tools** 검색 > **Chrome 에 추가** 눌러서 설치 > 크롬재시작 > 설치하고 나면 **Components, Profiler** 탭 생기고 여기서 디버깅 가능
-- Component tab: 특정요소 선택하여 찾기, props 값 확인, 특정 코드가 어느 위치인지 확인
-- Profiler: 성능 저하되는 컴포넌트 찾기 (녹화시작 > 끝 > 어떤 컴포넌트가 시간 소요가 많이 되었는지 확인. 보통은 o.xxxxx ms가 소요. 그 이상 소요된다면 뭔가 문제가 있을지도?)
 
-2. Redux   
+### Redux DevTools   
 Chrome에서 **Chrome web store** 접속 > **Redux DevTools** 검색 > **Chrome 에 추가** 눌러서 설치 >  크롬재시작 > 설치하고 나면 **Redux** 탭 생기고 여기서 디버깅 가능
- - store 한 눈에 보여줌. state 변경한 내역 알려줌.
+- store 한 눈에 보여줌. state 변경한 내역 알려줌.
 
-# 성능개선
+# 성능개선 방법
+## 성능개선 확인 tools
+### React Developer Tools
+**1. 설치 방법**   
+[React Developer Tools](#react-developer-tools)
+
+**2. 사용방법**
+- Component 탭: 특정요소 선택하여 찾기, props 값 확인, 특정 코드 위치 확인   
+=> Component 탭을 활성화 시키고 프로젝트를 열면 컴포넌트가 재랜더링 될 때 재 랜더링되는 컴포넌트 반짝거림
+- Profiler 탭: 랜더링 속도 측정하여 성능 저하되는 컴포넌트 찾음   
+=> 녹화시작 > 끝 > 어떤 컴포넌트가 시간 소요가 많이 되었는지 확인. 보통은 o.xxxxx ms가 소요. 그 이상 소요된다면 뭔가 문제가 있을지도?
+
+### Lighthouse   
+Lighthouse는 웹사이트의 성능을 측정하고 개선 방향을 제시해 주는 툴
+
+**1. 설치방법**
+별도의 설치 필요 없음. 크롬 개발자모드(F12)에서 Lighthouse 탭에서 사용 가능.
+
+**2. 사용방법**
+- 모드
+  - 탐색(Navigation) : Lighthouse의 기본 값, 초기 페이지 로딩 시 발생하는 성능 문제를 분석한다.
+  - 기간(Timespan) : 사용자가 정의한 시간 동안 발생한 성능 문제를 분석한다.
+  - 스냅샷(Snapshot) : 현재 상태의 성능 문제를 분석한다.
+- 카테고리
+  - 성능(Performance) : 웹 페이지의 로딩 과정에서 발생하는 성능 문제를 분석한다.
+  - 접근성(Accessibility) : 서비스의 사용자 접근성 문제를 분석한다.
+  - 권장 사항(Best practices) : 웹사이트의 보안 측면과 웹 개발의 최신 표준에 중점을 두고 분석한다.
+  - 검색엔진 최적화(SEO) : 검색엔진에서 얼마나 잘 크롤링되고 검색 결과에 표시되는지 분석한다.
+  - 프로그레시브 웹 앱(Progressive Web App) : 서비스 워커와 오프라인 동작 등, PWA와 관련된 문제를 분석한다.
+
+## 성능을 개선할 수 있는 방법
 ### 1. Lazy import
 - React는 Single page application이기 때문에 발행을 하기 위해 npm run build 하고 나면 하나의 html, css, js 파일이 생성됨. 모든 내용이 다 하나의 페이지에 들어가있으므로 React로 만들어진 페이지는 느림.   
 - 메인 페이지에서는 다른 페이지까지 로드 할 필요가 없기 때문에, "다른 페이지는 필요할 때 import 해주세요." 라고 명령가능. 그게 바로, **lazy import**.   
@@ -1866,8 +1901,23 @@ function Parent () {
 }
 ```
 
-### useMemo
-사용 방법은 [useMemo](#usememo-컴포넌트-최적화-캐싱기능) 참고
+### useMemo & useCallback
+- useMemmo: [useMemo](#usememo-컴포넌트-최적화-캐싱기능) 참고
+- useCallback: [useCallback](#usecallback-컴포넌트-성능-최적화) 참고
+
+> [!NOTE]
+> <details>
+> <summary> useMemo vs useCallback => 사실 아직 잘 모르겠음. 나중에 감이오면 다시 정리 필요</summary>
+>
+> | |useMemo | useCallback|
+> |-|--------|------------|
+> |Memoization | 계산된 결과 값 | 함수 |
+> | 사용        | ? | 자식 컴포넌트에 props로 함수를 전달할 경우|
+> |             |   | 이벤트 핸들러 함수 재사용
+> |             |   | 외부에서 값을 가져오는 api를 호출하는 경우|   
+>
+> useCallback의 dependencies가 변환될 때 반환하는 함수는, 이전의 함수와 형태는 같지만 새로운 함수. 새로운 무기명 함수를 반환. 이전의 함수와 형태가 같을 뿐 다른 메모리 주소가지고 있음
+> </details>
 
 ### useTransition
 리액트 18버전부터 추가된 기능으로, 느린 컴포넌트 성능 향상 기능 (카드 빛 돌려막기 느낌). startTransition()안에 있는 코드를 뒤로 늦쳐줌. 실행 시점을 조절하면서 성능항상.
@@ -1929,6 +1979,8 @@ function App(){
   )
 }
 ```
+
+
 # React build
 React는 개발 끝나면 build를 해야 쓸 수 있음. Build를 하고 나면 build folder 생성됨. React코드 수정할 때마다 build 할 필요 없고, 마지막 deploy할 때만 build 하면 됨.
 ```
