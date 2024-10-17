@@ -618,13 +618,247 @@ function App() {
   )
 }
 ```
-### useContext()
 
-### useCallback()
+### useMemo(): 컴포넌트 성능 최적화
+<b> 0. 시작 전 알아야할 사항 </b>   
+- `Memoization`: 동일한 값을 리턴하는 함수를 반복적으로 호출해야 한다면, 맨 처음 값을 메모리에 저장해서 필요할 때(dependency가 변경될 때)마다 또 다시 계산하지 않고 메모리에서 꺼내서 재사용 하는 기법.
+=> 자주 사용 하는 값을 캐싱을 해둬서 그 값이 필요할 때마다 캐시 값에서 꺼내서 씀.
+- `함수형 컴포넌트`는 말 그대로 `함수` 임. 함수형 컴포넌트가 랜더링이 된다는건 그 함수가 호출된다는 의미 -> 함수는 호출될 때 마다 그 내부에 정의되어 있는 모든 변수들이 초기화.  
+
+<b> 1. 언제 사용하는가? </b>   
+- 컴포넌트 최적화할 때. (컴포넌트 내에서 동일한 함수를 반복적으로 호출 할 때)        
+useMemo는 memoization을 위해서 따로 메모리를 소비해서 값을 저장하는 것. => 따라서, 무분별하게 사용하면 메모리 과부화로 오히려 성능 저하 가능성 있음.
+
+<b> 2. 문법 </b>   
+- 기본 문법 
+  ```JavaScript
+  import { useMemo } from 'react';
+
+  //useMemo()의 인자: 콜백함수, 디펜던시(optional)
+  const value = useMemo( () => {
+    return 콜백함수(); // 콜백함수: momoization할 값을 계산해서 리턴해주는 함수
+  }, [디펜던시])       // 디펜던시: 디펜던시가 변경될 때 마다 다시 memoization을 해서 메모리 값을 업데이트.
+  ```
+
+<b> 3. 사용 예시 </b>  
+Senario: useEffect()를 사용하는데 `status라는 dependency가 존재`하는 경우   
+- `status`가 `원시 타입`인 경우:    
+  |이벤트 | 랜더링 순서 |
+  |------|------------|
+  |`숫자 변경 버튼` 클릭 | num 변경 ->  App() 재랜더링 -> status 값 변경 X -> useEffect() 호출 X |  
+  |`전등 변경 버튼` 클릭 | isOn 변경 ->  App() 재랜더링 -> status 값 변경 O -> useEffect() 호출 O | 
+   
+  
+  ```JavaScript
+  import React, { useState, useEffect } from 'react';
+
+  function App() {
+    const [num, setNum] = useState(0);
+    const [isOn, setisOn] = useState(false);
+
+    const status = isOn? '켜짐' : '꺼짐';
+
+    useEffect( () => {
+      console.log('전등 상태(status) 변경 됨! num은 노상관!');
+    }, [status]);
+
+    return (
+      <div>
+        <button onClick={ () => setNum(num+1) }>숫자 변경</button>
+        <span>변경된 숫자: {num}</span>
+      </div>
+      <div>
+        <button onClick={ () => setisOn(!isOn) }>전등 변경</button>
+        <span>전등: {status}</span>
+      </div>
+    ) 
+  }
+  export default App;
+  ```
+
+- `status`가 `객체 타입`인 경우 + `useEffect()`만 사용   
+  => 아래 코드를 실행한다면 예상치 못한 결과가 나옴. 왜 그럴까? 
+  |이벤트 | 랜더링 순서 |
+  |------|------------|
+  |`숫자 변경 버튼` 클릭 | num 변경 ->  App() 재랜더링 -> status 값 변경 X -> <b>useEffect() 호출 안되기를 원했으나 호출됨??????</b> |  
+  |`전등 변경 버튼` 클릭 | isOn 변경 ->  App() 재랜더링 -> status 값 변경 O -> useEffect() 호출 O | 
+
+  ```JavaScript
+  import React, { useState, useEffect } from 'react';
+
+  function App() {
+    const [num, setNum] = useState(0);
+    const [isOn, setisOn] = useState(false);
+
+    const status = {
+      light: isOn? '켜짐' : '꺼짐'
+    }
+
+    useEffect( () => {
+      console.log('전등 상태(status) 변경 됨! num은 노상관!');
+    }, [status]);
+
+    return (
+      <div>
+        <button onClick={ () => setNum(num+1) }>숫자 변경</button>
+        <span>변경된 숫자: {num}</span>
+      </div>
+      <div>
+        <button onClick={ () => setisOn(!isOn) }>전등 변경</button>
+        <span>전등: {status.light}</span>
+      </div>
+    ) 
+  }
+  export default App;
+  ```
+  => 그 이유는, `status`가 객체 타입이라서 값을 저장하는게 아니라 메모리 주소를 저장하기 때문.    
+  => useEffect()의 실행 조건인 depedency에서, `원시타입은 실질적인 값을 비교`하는 반면에 `객체타입은 메모리 주소를 비교`함.    
+  => 때문에, 객체의 값이 같은 것과 상관없이 재랜더링된 객체의 주소값이 달라져 useEffect()가 실행
+
+  > <details>
+  > <summary> [!NOTE] 원시(Primitive)타입 & 객체(Object) 타입</summary>
+  >
+  > | 타입     | 값 할당 | 종류   |
+  > |---------|--------|--------|
+  > | 원시타입  | `값`을 저장                | String, Number, Boolean, Null, Undefined, BigInt, Symbol |
+  > | 객체타입  | 값이 아닌 `메모리 주소`를 저장 | Object, Array, function (원시타입을 제외한 모든 것)                  | 
+  >
+  > </details>
+
+  => 그렇다면 재랜더링 해도 useEffect() 실행 안되게 하고 싶다면?     
+  => 재랜더링 할 때에 `status`가 초기화 되는걸 막아주면 됨. 이럴 때 사용될 수 있는게 useMemo()
+   
+- `status`가 `객체 타입`인 경우 + `useEffect() + useMemo()` 사용  
+  ```JavaScript
+  import React, { useState, useEffect, useMemo } from 'react';
+
+  function App() {
+    const [num, setNum] = useState(0);
+    const [isOn, setisOn] = useState(false);
+
+    const status = useMemo( ()= > {
+      return { 
+        light: isOn? '켜짐' : '꺼짐' 
+      };
+    }, [isOn]);
+
+    useEffect( () => {
+      console.log('전등 상태(status) 변경 됨! num은 노상관!');
+    }, [status]);
+
+    return (
+      <div>
+        <button onClick={ () => setNum(num+1) }>숫자 변경</button>
+        <span>변경된 숫자: {num}</span>
+      </div>
+      <div>
+        <button onClick={ () => setisOn(!isOn) }>전등 변경</button>
+        <span>전등: {status.light}</span>
+      </div>
+    ) 
+  }
+  export default App;
+  ```
+
+
+### useCallback(): 컴포넌트 성능 최적화
+<b> 1. 언제 사용하는가? </b>   
+- 컴포넌트 최적화할 때. (컴포넌트 내에서 동일한 함수를 반복적으로 호출 할 때)
+- useMemo와 다르게 인자로 전달한 콜백 함수 자체를 memoization 함.       
+useMemo는 memoization을 위해서 따로 메모리를 소비해서 값을 저장하는 것. => 따라서, 무분별하게 사용하면 메모리 과부화로 오히려 성능 저하 가능성 있음.
+
+<b> 2. 문법 </b>   
+- 기본 문법 
+  ```JavaScript
+  import { useCallback } from 'react';
+
+  //useMemo()의 인자: 콜백함수, 디펜던시(optional)
+  const value = useCallback( () => {
+    return 콜백함수(); // 콜백함수: momoization할 함수
+  }, [디펜던시])       // 디펜던시: 디펜던시가 변경될 때 마다 다시 memoization을 해서 메모리 값을 업데이트.
+  ```
+
+<b> 3. 사용 예시 </b>  
+- `someFunction`가 `객체 타입(function)`이고, `useEffect()`만 사용   
+  => 아래 코드를 실행한다면, useEffect()안의 코드가 계속 실행됨. 
+  |이벤트 | 랜더링 순서 |
+  |------|------------|
+  |`input` 숫자 변경 | number 변경 ->  App() 재랜더링 -> someFunction은 객체이므로 메모리 주소값 변경 됨 -> useEffect() 호출 O |    
+  
+  > ![NOTE] 
+  > 원시타입과 객체타입의 값 할당이 궁금하다면 [useMemo()](#usememo-컴포넌트-성능-최적화)의 `원시(Primitive)타입 & 객체(Object) 타입` 참고
+
+  ```JavaScript
+  import { useEffect, useState } from 'react';
+
+  function App() {
+    const[number, setNumber] = useState(0);
+
+    const someFunction = () => {
+      console.log(`someFunc: number: ${number}`);
+      return;
+    }
+
+    useEffect( () => {
+      console.log('someFunction이 변경되었습니다.');
+    }, [someFunction])
+
+    return (
+      <div>
+        <input
+          type="number"
+          value={number}
+          onChange={(e) => setNumber(e.target.value)}
+        />
+        <br />
+        <button onClick={someFunction}> Call someFunc </button>
+      </div>
+    )
+
+    export default App;
+  }
+  ```
+
+- `someFunction`가 `객체 타입(function)`이고, `useEffect() + useCallback()` 사용   
+  ```JavaScript
+  import { useEffect, useState, useCallback } from 'react';
+
+  function App() {
+    const[number, setNumber] = useState(0);
+
+    const someFunction = useCallback(() => {
+      console.log(`someFunc: number: ${number}`);
+      return;
+    }, [number]);
+
+    useEffect( () => {
+      console.log('someFunction이 변경되었습니다.');
+    }, [someFunction])
+
+    return (
+      <div>
+        <input
+          type="number"
+          value={number}
+          onChange={(e) => setNumber(e.target.value)}
+        />
+        <br />
+        <button onClick={someFunction}> Call someFunc </button>
+      </div>
+    )
+
+    export default App;
+  }
+  ```
+
+=> 여기서부터   
+https://www.youtube.com/watch?v=XfUF9qLa3mU&list=PLZ5oZ2KmQEYjwhSxjB_74PoU6pmFzgVMO&index=7
+12분 부터 보기
+
+### useContext()
 
 ### useRef()
 
-### useMemo()
 
 
 ## Custom hook
@@ -1633,24 +1867,7 @@ function Parent () {
 ```
 
 ### useMemo
-컴포넌트 렌더링시 1회만 실행시켜 줌. 그 이후에는 시행 아예 안됨.
-```JavaScript
-// 1. Import 
-import { useMemo } from 'react';
-
-// 2. 자식 함수 생성
-function testFun() {
-  return(
-    <div>자식임</div>
-  )
-}
-
-function Parent() {
-  // 3. userMemo( ()=>{} ) 샤용
-  // [dependencies]는 optional. dependencies에 따라 실행여부 결정할 수 있음.
-  let result = useMemo(()=>{return testFun()}, [dependencies])
-}
-```
+사용 방법은 [useMemo](#usememo-컴포넌트-최적화-캐싱기능) 참고
 
 ### useTransition
 리액트 18버전부터 추가된 기능으로, 느린 컴포넌트 성능 향상 기능 (카드 빛 돌려막기 느낌). startTransition()안에 있는 코드를 뒤로 늦쳐줌. 실행 시점을 조절하면서 성능항상.
