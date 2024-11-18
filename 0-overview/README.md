@@ -1855,11 +1855,12 @@ Lighthouse는 웹사이트의 성능을 측정하고 개선 방향을 제시해 
   - 프로그레시브 웹 앱(Progressive Web App) : 서비스 워커와 오프라인 동작 등, PWA와 관련된 문제를 분석한다.
 
 ## 성능을 개선할 수 있는 방법
-### 1. Lazy import
+### 1. Code-Splitting
+**1) Lazy import**
 - React는 Single page application이기 때문에 발행을 하기 위해 npm run build 하고 나면 하나의 html, css, js 파일이 생성됨. 모든 내용이 다 하나의 페이지에 들어가있으므로 React로 만들어진 페이지는 느림.   
 - 메인 페이지에서는 다른 페이지까지 로드 할 필요가 없기 때문에, "다른 페이지는 필요할 때 import 해주세요." 라고 명령가능. 그게 바로, **lazy import**.   
 - 장점: 아래와 같이 lazy(()=>{}) 쓰게되면, 하나의 js파일이 아니라 별도의 js 파일이 생성 되어 로딩 속도 개선할 수 있음.
-- 단점: details 페이지나 cart 페이지 접속하려고 할 때 약간의 지연(로딩시간) 발생, `<Suspense/>` 이용하여 '로딩중...' 문구 띄우는 방법도 고려해 볼 수 있음.
+- 단점: 다른 상세 페이지 (details, cart 등) 접속하려고 할 때 약간의 지연(로딩시간) 발생, `<Suspense/>` 이용하여 '로딩중...' 문구 띄우는 방법도 고려해 볼 수 있음.
 ```JavaScript
 (App.js)
 // 1. import libraries
@@ -1878,12 +1879,13 @@ function App() {
   )
 }
 ```
+- 참고: [lazy](https://react.dev/reference/react/lazy), [Suspense](https://react.dev/reference/react/Suspense)
 
 ### 2. memoization
 - 리액트는 부모 컴포넌트가 랜더링이 되면 자식 컴포넌트도 항상 재랜더링. 근데 만약 자식 컴포넌트가 속도가 너무 오래걸리는 컴포넌트 라면? => 성능저하 일으킬 수 있음.
 - 따라서, 메모리에 값을 기억해 두고 그 캐시된 값을 불러오도록 하여 성능 향상 시키는 것 가능.
 
-**1. React.memo()**
+**1) React.memo()**
 - 장점: 부모 컴포넌트가 리렌더링 되어도 props가 변경되지 않았다면 자식은 리렌더링 되지 않음
 - 단점: 1) memo()는 실행될 때마다, 기존 props와 신규 props가 같은지 비교 작업(간접비)을 하고 다르다면 재랜더링 작업을 함. => 만약, props가 길고 복잡하다면 비교하는데도 시간 많이 소요될 수 있으므로 오히려 성능저하 일으킬 수 있음.    
        2) memo()는 계산한 값을 메모리에 저장하는 것이므로, 불필요하게 많이 쓴다면 메모리 소비로 이어질 수 있음.
