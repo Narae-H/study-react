@@ -859,6 +859,8 @@ https://www.youtube.com/watch?v=XfUF9qLa3mU&list=PLZ5oZ2KmQEYjwhSxjB_74PoU6pmFzg
 
 ### useRef()
 
+### useSelector()
+
 
 
 ## Custom hook
@@ -1842,31 +1844,49 @@ function App() {
 }
 ```
 
-### 2. memo
-- 부모 컴포넌트가 랜더링이 되면 자식 컴포넌트도 항상 재랜더링. 근데 만약 자식 컴포넌트가 속도가 너무 오래걸리는 컴포넌트 라면? => 성능저하 일으킬 수 있음.
-- 필요할 때만 재랜더링 해달라고 코드짜는 것이 **memo**. **let** [변수이름] **= memo (**[callback 함수]**)**.   
-- 장점: 자식으로 전달되는 props가 변할 때만 재랜더링해줌.   
-- 단점: memo()는 실행될 때마다, 기존 props와 신규 props가 같은지 비교 작업을 하고 다르다면 재랜더링 작업을 함. 만약, props가 길고 복잡하다면 비교하는데도 시간 많이 소요될 수 있으므로 오히려 성능저하 일으킬 수 있음.
+### 2. memoization
+- 리액트는 부모 컴포넌트가 랜더링이 되면 자식 컴포넌트도 항상 재랜더링. 근데 만약 자식 컴포넌트가 속도가 너무 오래걸리는 컴포넌트 라면? => 성능저하 일으킬 수 있음.
+- 따라서, 메모리에 값을 기억해 두고 그 캐시된 값을 불러오도록 하여 성능 향상 시키는 것 가능.
+
+**1. React.memo()**
+- 장점: 부모 컴포넌트가 리렌더링 되어도 props가 변경되지 않았다면 자식은 리렌더링 되지 않음
+- 단점: 1) memo()는 실행될 때마다, 기존 props와 신규 props가 같은지 비교 작업(간접비)을 하고 다르다면 재랜더링 작업을 함. => 만약, props가 길고 복잡하다면 비교하는데도 시간 많이 소요될 수 있으므로 오히려 성능저하 일으킬 수 있음.    
+       2) memo()는 계산한 값을 메모리에 저장하는 것이므로, 불필요하게 많이 쓴다면 메모리 소비로 이어질 수 있음.
+- React.memo()와 memo()는 동일.   
+  - React.memo(Component, (prevProps, nextProps) => {}) / memo(Component, (prevProps, nextProps) => {}) 
+  - Component: memoize 하려는 컴포넌트, (prevProps, nextProps) => {}: opetional로 이전 props와 새로운 props를 받아서 비교. true를 반환하면 리랜더 안됨. 
 ```JavaScript
-import { memo } from 'react';
+import { memo, useState } from 'react';
 
-let Child = memo ( function() {
-  console.log("재랜더링 테스트");
-  return(
-    <div>자식임</div>
-  )
-})
-
-function Parent () {
+export default function MyApp() {
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
   return (
     <>
-      <Child></Child>
+      <label>
+        Name{': '}
+        <input value={name} onChange={e => setName(e.target.value)} />
+      </label>
+      <label>
+        Address{': '}
+        <input value={address} onChange={e => setAddress(e.target.value)} />
+      </label>
+      <Greeting name={name} />
     </>
-  )
+  );
 }
+
+// Name은 Greeting의 props 중 하나이기 때문에 name이 변경될 때 마다 재렌더링 O.
+// Address 는 Greeting의 props가 아니기 때문에 address가 변경된다고 하더라도 재렌더링 X.
+const Greeting = memo(function Greeting({ name }) {
+  console.log("Greeting was rendered at", new Date().toLocaleTimeString());
+  return <h3>Hello{name && ', '}{name}!</h3>;
+});
 ```
 
-### useMemo
+> [!NOTE] (API 레퍼런스 - memo)[https://ko.react.dev/reference/react/memo]
+
+**2. useMemo**
 사용 방법은 [useMemo](#usememo-컴포넌트-최적화-캐싱기능) 참고
 
 ### useTransition
