@@ -1571,44 +1571,6 @@ const skillsSlice = createSlice({
 export default skillsSlice.reducer;
 ```
 
-# LocalStorage 
-브라우저 안에 있는 저장소
-
-### 위치
-Chrome 개발자 모드(F12) > Application 탭 > Local Storage
-
-### 특징
-1. key:value 형태로 저장가능   
-2. 최대 5MB까지 문자/JSON만 저장가능 (숫자를 저장해도 문자로 변환해서 저장 됨)   
-3. 유저가 캐시를 지우지 않는 한, 사이트 재접속해도 남아있음    
-[!NOTE] Local Storage는 재접속해도 남아있지만, Session Storage는 브라우저 끄면 날라감.
-
-### 사용법
-1. 일반 문자인 경우
-```JavaScript
-localStorage.setItem('age', '20')
-localStorage.getItem('age')
-localStorage.removeItem('age')
-```
-
-2. array/object 인 경우   
-local storage는 문자 또는 JSON만 저장 가능하므로, JSON 타입으로 변형필요
-```JavaScript
-let obj = {name : 'kim'}
-
-// 넣을때: JSON.stringify() 이용해서 '객체 -> 문자'로 변경
-localStorage.setItem('data', JSON.stringify(obj)); 
-
-// 꺼낼때: JSON.parse() 이용해서 '문자 -> JSON'으로 변경
-console.log( JSON.parse( localStorage.getItem('data') ) )
-```
-
-### 외부 라이브러리
-- redux-persist
-- Jotai
-- Zustand
-
-
 # react-query
 병렬쿼리(Parallel Queries), 종속쿼리 등을 이용하여 실시간 데이터를 주고 받기 쉬움. useQuery()는 비동기로 동작하므로 여러개 비동기 query가 있다면 userQueries() 사용하면 좋음. 또는 useQuery()에서 enabled를 사용하면 동기적으로 사용가능.   
 실시간 데이터를 지속적으로 가져와야 하는 사이트(SNS, 코인거래소) 등에서 쓰면 좋음. 그 외 사이트는 안써도 상관없음.
