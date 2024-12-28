@@ -2213,6 +2213,158 @@ let { p: foo, q: bar } = o;
 // foo = 42 , bar = true
 ```
 
+# React + Typescript
+## 설치방법
+### 1. 새로운 React 프로젝트
+1) 새로운 작업 폴더 만듬
+2) 터미널에 아래 명령어 입력
+  ```bash
+  npx create-react-app my-app --template typescript
+  ```
+3) 필요하다면 `tsconfig.json` 파일 만들어서 설정도 가능
+
+### 2. 이미 있는 React 프로젝트에 설치
+1) 작업 폴더 경로에서 터미널 오픈
+2) 터미널에 아래 명령어 입력
+  ```bash
+  npm install --save typescript @types/node @types/react @types/react-dom @types/jest
+  ```
+3) 필요하다면 `tsconfig.json` 파일 만들어서 설정도 가능
+<br/>
+
+## 타입지정
+### JSX 타입지정
+```tsx
+let 박스 :JSX.Element = <div></div>
+let 버튼 :JSX.Element = <button></button>
+```
+
+### function component 타입 지정
+`파라미터`나 `리턴`에 타입 지정 가능
+
+- `return`에 타입지정
+  ```typescript
+  function App (): JSX.Element {
+    return (
+      <div>안녕하세요</div>
+    )
+  }
+  ```
+<br/>
+
+- `parameter`에 타입지정: 파라미터는 항상 props 이므로 props 형태에 맞추면 됨.
+  ```tsx
+  // props 는 항상 객체 형식이므로 객체 타입에 맞춰서 타입을 지정.
+  type AppProps = {
+    name: string;
+  }; 
+
+  function App (props: AppProps) :JSX.Element {
+    return (
+      <div>{message}</div>
+    )
+  }
+  ```
+
+  - `parameter`에 타입지정: props로 JSX 를 보내는 경우
+  ```tsx
+  type ContainerProps = {
+    a: JSX.IntrinsicElements['h4'];
+  }; 
+
+  function Container (props: ContainerProps) {
+    return (
+      <div>{props.a}</div>
+    )
+  }
+  ```
+
+### state 문법 사용 시 타입지정
+**1) 일반**
+state 만들 때 자동으로 타입이 할당
+```tsx
+// 타입 지정 안했지만 user의 타입은 자동으로 string
+const [user, setUser] = useState('kim'); 
+```
+
+**2) 타입을 2개 이상**:  generic 문법(`<>`) 사용
+```tsx
+const [user, setUser] = useState<string | null>('kim');
+```
+
+### type asserion 문법 사용
+`as` 키워드 사용하여 타입 임시 지정. but as키워드는 임시방편이므로 되도록 쓰지 말자.
+```tsx
+let code: any = 123; 
+let employeeCode = code as number;
+```
+
+### redux
+
+- state와 reducer 만들 때
+```tsx
+import { createSlice, configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
+
+// 1. 변수 타입지정
+const 초기값: {count: number, user: string} = { count: 0, user : 'kim' };
+
+// 2. createSlice()안의 reducers(함수들) 타입 지정
+// 첫번째 파라미터(여기서는 state)는 자동으로 타입지정되므로 타입 지정 필요 없음.
+// action은 타입 지정 필요
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState : 초기값,
+  reducers: {
+    increment (state){
+      state.count += 1
+    },
+    decrement (state){
+      state.count -= 1
+    },
+    incrementByAmount (state, action :PayloadAction<number>){
+      state.count += action.payload
+    }
+  }
+})
+
+let store = configureStore({
+  reducer: {
+    counter1 : counterSlice.reducer
+  }
+})
+
+// 3. state 타입을 export 해두는건데 나중에 꺼내는 곳에서 타입지정할 때 쓰임.
+// 이렇게 타입을 변수에 저장해두면, 타입이 변경되더라도 여기서만 변경하면 됨. 꺼내쓰는 곳에서 일일이 수정할 필요가 없음.
+export type RootState = ReturnType<typeof store.getState>
+
+//수정방법 만든거 export
+export let {increment, decrement, incrementByAmount} = counterSlice.actions
+```
+
+- state 꺼낼 때
+```tsx
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState, increment } from './index'
+
+function App() {
+
+  // 1. useSelector()이용해서 꺼내올 때 타입지정
+  const 꺼내온거 = useSelector( (state: RootState) => state);
+  const dispatch = useDispatch();
+
+  return (
+    <div className="App">
+      {꺼내온거.counter1.count}
+      <button onClick={()=>{dispatch(increment())}}>버튼</button>
+    </div>
+  );
+} 
+```
+<br/>
+<br/>
+
+
 # 참고링크
 - [코딩애플 인강](https://codingapple.com/)
 - [코딩애플 유튜브](https://www.youtube.com/@codingapple)
