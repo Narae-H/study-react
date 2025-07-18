@@ -895,7 +895,83 @@ useMemo는 memoization을 위해서 따로 메모리를 소비해서 값을 저�
 
 ### useContext()
 
-### useRef()
+### useRef(): 랜더링 후에도 변하지 않는 값
+**1. 언제 사용하는가?**  
+- 특정 값이나 DOM 요소에 대한 `변하지 않는 참조`를 저장하는 React 훅
+- 컴포넌트가 리렌더링 되어도 useRef로 만든 객체는 계속 유지
+- `.current`라는 프로퍼티 안에 원하는 값을 넣고 꺼내 쓸 수 있음
+
+**2. 문법** 
+```js
+const countRef = useRef(0);
+```
+
+**3. 사용 예시**
+- 값 저장용 (리렌더링 간 값 유지)
+  - countRef.current는 클릭할 때마다 1씩 증가하지만 이 자체는 렌더링 트리거가 아님
+  - 화면에 보여줄 땐 상태(renderCount)를 업데이트해서 리렌더링 시킴
+  - 이렇게 하면 값 유지와 리렌더링 제어를 분리
+```js
+import React, { useState, useRef } from 'react';
+
+function ClickCounter() {
+  const countRef = useRef(0);  // 리렌더링 간 유지되는 값
+  const [renderCount, setRenderCount] = useState(0);
+
+  const handleClick = () => {
+    countRef.current += 1;           // 값만 변경 (리렌더링 X)
+    setRenderCount(prev => prev + 1); // 강제로 리렌더링 유도 (화면 업데이트)
+  };
+
+  return (
+    <div>
+      <p>클릭 횟수 (ref): {countRef.current}</p>
+      <p>렌더링 횟수 (state): {renderCount}</p>
+      <button onClick={handleClick}>클릭</button>
+    </div>
+  );
+}
+```
+
+- DOM 요소 접근용
+  - inputRef에 DOM input 요소가 할당되고, 마운트 후 직접 조작 가능
+```js
+import { useRef, useEffect } from 'react';
+
+function TextInput() {
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus();  // 컴포넌트가 마운트된 후 input에 포커스 줌
+  }, []);
+
+  return <input ref={inputRef} type="text" />;
+}
+```
+
+- useEffect 첫 마운트 때 실행 안 되게 하는 패턴
+  - didMount라는 ref를 써서 컴포넌트가 마운트됐는지 여부를 체크
+  - 마운트 때는 내부 코드를 건너뛰고
+  - 이후 value가 변경될 때만 useEffect 안 코드 실행
+```js
+import React, { useEffect, useRef, useState } from 'react';
+
+function Example({ value }) {
+  const didMount = useRef(false);
+
+  useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      return;  // 첫 마운트 때는 실행 안 함
+    }
+
+    // value가 바뀔 때만 실행할 로직
+    console.log('value가 변경됨:', value);
+  }, [value]);
+
+  return <div>값: {value}</div>;
+}
+```
 
 ### useSelector()
 
